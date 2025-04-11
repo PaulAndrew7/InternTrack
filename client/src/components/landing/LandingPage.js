@@ -1,7 +1,16 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useContext, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, styled } from '@mui/material';
+import {
+  Box,
+  Button,
+  styled,
+  TextField,
+  Alert,
+  CircularProgress,
+} from '@mui/material';
+import { X } from '@mui/icons-material';
+import { AuthContext } from '../../context/AuthContext';
 
 const FloatingPaths = ({ position }) => {
   const paths = Array.from({ length: 36 }, (_, i) => ({
@@ -76,7 +85,284 @@ const StyledButton = styled(Button)(({ theme }) => ({
   },
 }));
 
+const LoginButton = ({ onClick }) => {
+  return (
+    <motion.button
+      onClick={onClick}
+      style={{
+        padding: '16px 32px',
+        fontSize: '1.125rem',
+        fontWeight: 400,
+        borderRadius: '1rem',
+        background: 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        color: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        cursor: 'pointer',
+        height: '60px',
+        width: '150px',
+        transition: 'all 0.3s ease',
+        boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)',
+      }}
+      whileHover={{ 
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        y: -2,
+        boxShadow: '0 0 30px rgba(255, 255, 255, 0.15)',
+      }}
+      layoutId="loginContainer"
+      initial={{ borderRadius: 9999 }}
+    >
+      <motion.span layoutId="loginText">Login</motion.span>
+      <motion.span layoutId="loginArrow" style={{ marginLeft: '4px' }}>
+        →
+      </motion.span>
+    </motion.button>
+  );
+};
+
+const LoginFormExpanded = ({ onClose }) => {
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { login, isAuthenticated, user, error, clearErrors } =
+    useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (user.role === 'student') {
+        navigate('/student/dashboard');
+      } else if (user.role === 'teacher') {
+        navigate('/teacher/dashboard');
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
+
+  const { username, password } = formData;
+
+  const onChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const success = await login({ username, password });
+
+    setIsSubmitting(false);
+
+    if (success) {
+      // The useEffect will handle the navigation based on user.role
+      // once the user state is updated
+    }
+  };
+
+  return (
+    <motion.div
+      layoutId="loginContainer"
+      style={{
+        background: 'rgba(255, 255, 255, 0.05)',
+        color: 'rgba(209, 213, 219, 1)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        padding: '24px',
+        borderRadius: '8px',
+        width: '100%',
+        maxWidth: '400px',
+        boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)',
+      }}
+      initial={{ borderRadius: 9999 }}
+      animate={{ borderRadius: 8 }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '20px',
+        }}
+      >
+        <motion.h2
+          layoutId="loginText"
+          style={{ fontSize: '2rem', fontWeight: 600 , margin: '0 auto'}}
+        >
+          Login
+        </motion.h2>
+        <motion.button
+          layoutId="loginArrow"
+          onClick={onClose}
+          style={{
+            color: 'rgba(156, 163, 175, 1)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '8px',
+          }}
+          whileHover={{ color: 'white', scale: 1.1 }}
+        >
+        
+        </motion.button>
+      </div>
+
+      <motion.form
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        onSubmit={onSubmit}
+        style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+      >
+        {error && (
+          <Alert
+            severity="error"
+            onClose={clearErrors}
+            sx={{
+              mb: 2,
+              borderRadius: 2,
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: 'text.primary',
+            }}
+          >
+            {error}
+          </Alert>
+        )}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label htmlFor="username" style={{ color: 'rgba(209, 213, 219, 1)' }}>
+            Username / Register Number
+          </label>
+          <TextField
+            id="username"
+            name="username"
+            type="text"
+            value={username}
+            onChange={onChange}
+            required
+            fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(24, 24, 24, 0.5)',
+                color: 'rgba(229, 231, 235, 1)',
+                '& fieldset': {
+                  borderColor: 'rgba(75, 85, 99, 0.9)',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'rgba(107, 114, 128, 0.9)',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'rgba(156, 163, 175, 1)',
+              },
+            }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label htmlFor="password" style={{ color: 'rgba(209, 213, 219, 1)' }}>
+            Password
+          </label>
+          <TextField
+            id="password"
+            name="password"
+            type="password"
+            value={password}
+            onChange={onChange}
+            required
+            fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(24, 24, 24, 0.5)',
+                color: 'rgba(229, 231, 235, 1)',
+                '& fieldset': {
+                  borderColor: 'rgba(75, 85, 99, 0.9)',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'rgba(107, 114, 128, 0.9)',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'rgba(156, 163, 175, 1)',
+              },
+            }}
+          />
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            fontSize: '0.875rem',
+          }}
+        >
+          <a
+            href="#"
+            style={{ color: 'rgba(156, 163, 175, 1)', textDecoration: 'none' }}
+          >
+            Forgot password?
+          </a>
+        </div>
+
+        <Button
+          type="submit"
+          fullWidth
+          disabled={isSubmitting}
+          sx={{
+            whiteSpace: 'nowrap',
+            fontSize: '0.875rem',
+            transition: 'all 0.3s ease',
+            paddingTop: '0.5rem',
+            paddingBottom: '0.5rem',
+            paddingLeft: '1.5rem',
+            paddingRight: '1.5rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '1rem',
+            borderRadius: '0.75rem',
+            fontWeight: 500,
+            position: 'relative',
+            height: '3rem',
+            minWidth: '18rem',
+            '@media (min-width: 768px)': {
+              minWidth: '14rem',
+            },
+            backgroundColor: '#000',
+            color: '#fff',
+            border: '2px solid rgba(65, 63, 62, 0.2)',
+            boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(4px)',
+            '&:hover': {
+              backgroundColor: 'rgba(24,24,27,0.9)',
+              boxShadow: '0 0 30px rgba(255, 255, 255, 0.15)',
+            },
+            '&:disabled': {
+              pointerEvents: 'none',
+              opacity: 0.5,
+            },
+            '& svg': {
+              pointerEvents: 'none',
+              width: '1rem',
+              height: '1rem',
+              flexShrink: 0,
+            },
+          }}
+        >
+          Login
+        </Button>
+      </motion.form>
+    </motion.div>
+  );
+};
+
 const LandingPage = () => {
+  const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
   const title = 'Welcome To InternTrack';
   const words = title.split(' ');
@@ -196,38 +482,21 @@ const LandingPage = () => {
             ))}
           </Box>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 1.8 }}
+          <div
+            style={{
+              position: 'relative',
+              display: 'flex',
+              justifyContent: 'center',
+            }}
           >
-            <StyledButton
-              onClick={handleGetStarted}
-              sx={{
-                fontFamily:
-                  'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-              }}
-            >
-              Login
-              <motion.span
-                style={{
-                  display: 'inline-block',
-                  marginLeft: '8px',
-                  opacity: 0.7,
-                }}
-                animate={{
-                  x: [0, 4, 0],
-                }}
-                transition={{
-                  duration: .5,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-              >
-                →
-              </motion.span>
-            </StyledButton>
-          </motion.div>
+            <AnimatePresence mode="wait">
+              {isExpanded ? (
+                <LoginFormExpanded onClose={() => setIsExpanded(false)} />
+              ) : (
+                <LoginButton onClick={() => setIsExpanded(true)} />
+              )}
+            </AnimatePresence>
+          </div>
         </motion.div>
       </Box>
     </Box>

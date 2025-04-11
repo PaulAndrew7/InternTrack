@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Register</title>
+    <style>
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: lightskyblue;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 400px;
+            height: 520px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-container {
+            width: 200%;
+            height: 100%;
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .form-box {
+            width: 50%;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .login-form, .register-form {
+            width: 100%;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #8e44ad;
+            box-shadow: 0px 0px 10px rgba(142, 68, 173, 0.5);
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: lightskyblue;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: rgb(38, 168, 211);
+            transform: translateY(-3px);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-button {
+            background: none;
+            color: #3498db;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .toggle-button:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        #message, #register-message {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        /* Sliding Effect */
+        .container.active .form-container {
+            transform: translateX(-50%);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 420px) {
+            .container {
+                width: 90%;
+                height: auto;
+            }
+            .form-box {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="container">
+        <div class="form-container">
+            <!-- Login Form -->
+            <div class="form-box login-form">
+                <h2>Login</h2>
+                <input type="text" id="login-username" placeholder="Username" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button onclick="login()">Login</button>
+                <p id="message" style="color: red;"></p>
+                <button class="toggle-button" onclick="toggleForm()">New User? Register</button>
+            </div>
+
+            <!-- Registration Form -->
+            <div class="form-box register-form">
+                <h2>Register</h2>
+                <input type="text" id="register-username" placeholder="Username" required>
+                <input type="password" id="register-password" placeholder="Password" required>
+                <select id="register-role">
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                </select>
+                <button onclick="register()">Register</button>
+                <p id="register-message" style="color: green;"></p>
+                <button class="toggle-button" onclick="toggleForm()">Already have an account? Login</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       function toggleForm() {
+            document.getElementById("container").classList.toggle("active");
+        }
+
+        async function login() {
+    const username = document.getElementById("login-username").value;
+    const password = document.getElementById("login-password").value;
+
+    const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    });
+
+    const data = await response.json();
+    
+    if (data.success) {
+        localStorage.setItem("role", data.role);
+        localStorage.setItem("regno", username);
+        localStorage.setItem("folderId", data.folderId); // Store Google Drive folder ID
+
+        if (data.role === "student") {
+            window.location.href = "stud_homepage.html";
+        } else if (data.role === "teacher") {
+            window.location.href = "coordinator_homepage.html";
+        }
+    } else {
+        document.getElementById("message").textContent = "Invalid credentials!";
+    }
+}
+
+
+
+        async function register() {
+            const username = document.getElementById("register-username").value;
+            const password = document.getElementById("register-password").value;
+            const role = document.getElementById("register-role").value;
+
+            const response = await fetch("http://localhost:5000/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password, role })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                document.getElementById("register-message").textContent = "Registration successful!";
+            } else {
+                document.getElementById("register-message").textContent = "User already exists!";
+            }
+        }
+    </script>
+
+</body>
+</html>

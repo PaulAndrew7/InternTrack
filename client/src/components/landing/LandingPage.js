@@ -8,6 +8,10 @@ import {
   TextField,
   Alert,
   CircularProgress,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import { X } from '@mui/icons-material';
 import { AuthContext } from '../../context/AuthContext';
@@ -123,7 +127,326 @@ const LoginButton = ({ onClick }) => {
   );
 };
 
-const LoginFormExpanded = ({ onClose }) => {
+const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+    confirmPassword: '',
+    role: 'student'
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  
+  const { register, isAuthenticated, user, error, clearErrors } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (user.role === 'student') {
+        navigate('/student/dashboard');
+      } else if (user.role === 'teacher') {
+        navigate('/teacher/dashboard');
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
+
+  const { username, password, confirmPassword, role } = formData;
+
+  const onChange = e => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    
+    if (e.target.name === 'confirmPassword' || e.target.name === 'password') {
+      if (e.target.name === 'confirmPassword' && e.target.value !== password) {
+        setPasswordError('Passwords do not match');
+      } else if (e.target.name === 'password' && confirmPassword && e.target.value !== confirmPassword) {
+        setPasswordError('Passwords do not match');
+      } else {
+        setPasswordError('');
+      }
+    }
+  };
+
+  const onSubmit = async e => {
+    e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    const success = await register({ 
+      username, 
+      password,
+      role
+    });
+    
+    setIsSubmitting(false);
+  };
+
+  return (
+    <motion.div
+      layoutId="loginContainer"
+      style={{
+        background: 'rgba(255, 255, 255, 0.05)',
+        color: 'rgba(209, 213, 219, 1)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        padding: '24px',
+        borderRadius: '8px',
+        width: '100%',
+        maxWidth: '400px',
+        boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)',
+      }}
+      initial={{ borderRadius: 9999 }}
+      animate={{ borderRadius: 8 }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '20px',
+        }}
+      >
+        <motion.h2
+          layoutId="loginText"
+          style={{ fontSize: '2rem', fontWeight: 600, margin: '0 auto' }}
+        >
+          Register
+        </motion.h2>
+        <motion.button
+          layoutId="loginArrow"
+          onClick={onClose}
+          style={{
+            color: 'rgba(156, 163, 175, 1)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '8px',
+          }}
+          whileHover={{ color: 'white', scale: 1.1 }}
+        >
+        </motion.button>
+      </div>
+
+      <motion.form
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        onSubmit={onSubmit}
+        style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+      >
+        {error && (
+          <Alert
+            severity="error"
+            onClose={clearErrors}
+            sx={{
+              mb: 2,
+              borderRadius: 2,
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: 'text.primary',
+            }}
+          >
+            {error}
+          </Alert>
+        )}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label htmlFor="username" style={{ color: 'rgba(209, 213, 219, 1)' }}>
+            Username / Register Number
+          </label>
+          <TextField
+            id="username"
+            name="username"
+            type="text"
+            value={username}
+            onChange={onChange}
+            required
+            fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(24, 24, 24, 0.5)',
+                color: 'rgba(229, 231, 235, 1)',
+                '& fieldset': {
+                  borderColor: 'rgba(75, 85, 99, 0.9)',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'rgba(107, 114, 128, 0.9)',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'rgba(156, 163, 175, 1)',
+              },
+            }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label htmlFor="password" style={{ color: 'rgba(209, 213, 219, 1)' }}>
+            Password
+          </label>
+          <TextField
+            id="password"
+            name="password"
+            type="password"
+            value={password}
+            onChange={onChange}
+            required
+            fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(24, 24, 24, 0.5)',
+                color: 'rgba(229, 231, 235, 1)',
+                '& fieldset': {
+                  borderColor: 'rgba(75, 85, 99, 0.9)',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'rgba(107, 114, 128, 0.9)',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'rgba(156, 163, 175, 1)',
+              },
+            }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label htmlFor="confirmPassword" style={{ color: 'rgba(209, 213, 219, 1)' }}>
+            Confirm Password
+          </label>
+          <TextField
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={onChange}
+            required
+            fullWidth
+            error={!!passwordError}
+            helperText={passwordError}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(24, 24, 24, 0.5)',
+                color: 'rgba(229, 231, 235, 1)',
+                '& fieldset': {
+                  borderColor: 'rgba(75, 85, 99, 0.9)',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'rgba(107, 114, 128, 0.9)',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'rgba(156, 163, 175, 1)',
+              },
+            }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label htmlFor="role" style={{ color: 'rgba(209, 213, 219, 1)' }}>
+            Role
+          </label>
+          <Select
+            id="role"
+            name="role"
+            value={role}
+            onChange={onChange}
+            fullWidth
+            sx={{
+              backgroundColor: 'rgba(24, 24, 24, 0.5)',
+              color: 'rgba(229, 231, 235, 1)',
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'rgba(75, 85, 99, 0.9)',
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'rgba(107, 114, 128, 0.9)',
+              },
+              '& .MuiSelect-icon': {
+                color: 'rgba(156, 163, 175, 1)',
+              },
+            }}
+          >
+            <MenuItem value="student">Student</MenuItem>
+            <MenuItem value="teacher">Teacher</MenuItem>
+          </Select>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            fontSize: '0.875rem',
+          }}
+        >
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              onSwitchToLogin();
+            }}
+            style={{ color: 'rgba(156, 163, 175, 1)', textDecoration: 'none' }}
+          >
+            Already have an account? Login
+          </a>
+        </div>
+
+        <Button
+          type="submit"
+          fullWidth
+          disabled={isSubmitting || !!passwordError}
+          sx={{
+            whiteSpace: 'nowrap',
+            fontSize: '0.875rem',
+            transition: 'all 0.3s ease',
+            paddingTop: '0.5rem',
+            paddingBottom: '0.5rem',
+            paddingLeft: '1.5rem',
+            paddingRight: '1.5rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '1rem',
+            borderRadius: '0.75rem',
+            fontWeight: 500,
+            position: 'relative',
+            height: '3rem',
+            minWidth: '18rem',
+            '@media (min-width: 768px)': {
+              minWidth: '14rem',
+            },
+            backgroundColor: '#000',
+            color: '#fff',
+            border: '2px solid rgba(65, 63, 62, 0.2)',
+            boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(4px)',
+            '&:hover': {
+              backgroundColor: 'rgba(24,24,27,0.9)',
+              boxShadow: '0 0 30px rgba(255, 255, 255, 0.15)',
+            },
+            '&:disabled': {
+              pointerEvents: 'none',
+              opacity: 0.5,
+            },
+            '& svg': {
+              pointerEvents: 'none',
+              width: '1rem',
+              height: '1rem',
+              flexShrink: 0,
+            },
+          }}
+        >
+          Register
+        </Button>
+      </motion.form>
+    </motion.div>
+  );
+};
+
+const LoginFormExpanded = ({ onClose, onSwitchToRegister }) => {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -303,9 +626,13 @@ const LoginFormExpanded = ({ onClose }) => {
         >
           <a
             href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              onSwitchToRegister();
+            }}
             style={{ color: 'rgba(156, 163, 175, 1)', textDecoration: 'none' }}
           >
-            Forgot password?
+            Don't have an account? Register
           </a>
         </div>
 
@@ -363,6 +690,7 @@ const LoginFormExpanded = ({ onClose }) => {
 
 const LandingPage = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
   const navigate = useNavigate();
   const title = 'Welcome To InternTrack';
   const words = title.split(' ');
@@ -491,7 +819,17 @@ const LandingPage = () => {
           >
             <AnimatePresence mode="wait">
               {isExpanded ? (
-                <LoginFormExpanded onClose={() => setIsExpanded(false)} />
+                showRegister ? (
+                  <RegisterFormExpanded 
+                    onClose={() => setIsExpanded(false)}
+                    onSwitchToLogin={() => setShowRegister(false)}
+                  />
+                ) : (
+                  <LoginFormExpanded 
+                    onClose={() => setIsExpanded(false)}
+                    onSwitchToRegister={() => setShowRegister(true)}
+                  />
+                )
               ) : (
                 <LoginButton onClick={() => setIsExpanded(true)} />
               )}

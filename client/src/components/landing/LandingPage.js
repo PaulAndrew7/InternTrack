@@ -110,6 +110,7 @@ const LoginButton = ({ onClick }) => {
         width: '150px',
         transition: 'all 0.3s ease',
         boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)',
+        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       }}
       whileHover={{ 
         backgroundColor: 'rgba(255, 255, 255, 0.2)',
@@ -119,8 +120,21 @@ const LoginButton = ({ onClick }) => {
       layoutId="loginContainer"
       initial={{ borderRadius: 9999 }}
     >
-      <motion.span layoutId="loginText">Login</motion.span>
-      <motion.span layoutId="loginArrow" style={{ marginLeft: '4px' }}>
+      <motion.span 
+        layoutId="loginText"
+        style={{
+          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        }}
+      >
+        Login
+      </motion.span>
+      <motion.span 
+        layoutId="loginArrow" 
+        style={{
+          marginLeft: '4px',
+          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        }}
+      >
         →
       </motion.span>
     </motion.button>
@@ -197,6 +211,7 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
         width: '100%',
         maxWidth: '400px',
         boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)',
+        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       }}
       initial={{ borderRadius: 9999 }}
       animate={{ borderRadius: 8 }}
@@ -211,7 +226,12 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
       >
         <motion.h2
           layoutId="loginText"
-          style={{ fontSize: '2rem', fontWeight: 600, margin: '0 auto' }}
+          style={{ 
+            fontSize: '2rem', 
+            fontWeight: 600, 
+            margin: '0 auto',
+            fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          }}
         >
           Register
         </motion.h2>
@@ -235,7 +255,12 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
         onSubmit={onSubmit}
-        style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+        style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '16px',
+          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        }}
       >
         {error && (
           <Alert
@@ -247,6 +272,7 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
               background: 'rgba(255, 255, 255, 0.05)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               color: 'text.primary',
+              fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             }}
           >
             {error}
@@ -254,7 +280,13 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label htmlFor="username" style={{ color: 'rgba(209, 213, 219, 1)' }}>
+          <label 
+            htmlFor="username" 
+            style={{ 
+              color: 'rgba(209, 213, 219, 1)',
+              fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            }}
+          >
             Username / Register Number
           </label>
           <TextField
@@ -269,6 +301,7 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
               '& .MuiOutlinedInput-root': {
                 backgroundColor: 'rgba(24, 24, 24, 0.5)',
                 color: 'rgba(229, 231, 235, 1)',
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                 '& fieldset': {
                   borderColor: 'rgba(75, 85, 99, 0.9)',
                 },
@@ -278,13 +311,20 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
               },
               '& .MuiInputLabel-root': {
                 color: 'rgba(156, 163, 175, 1)',
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
               },
             }}
           />
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label htmlFor="password" style={{ color: 'rgba(209, 213, 219, 1)' }}>
+          <label 
+            htmlFor="password" 
+            style={{ 
+              color: 'rgba(209, 213, 219, 1)',
+              fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            }}
+          >
             Password
           </label>
           <TextField
@@ -299,6 +339,7 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
               '& .MuiOutlinedInput-root': {
                 backgroundColor: 'rgba(24, 24, 24, 0.5)',
                 color: 'rgba(229, 231, 235, 1)',
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                 '& fieldset': {
                   borderColor: 'rgba(75, 85, 99, 0.9)',
                 },
@@ -308,13 +349,20 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
               },
               '& .MuiInputLabel-root': {
                 color: 'rgba(156, 163, 175, 1)',
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
               },
             }}
           />
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label htmlFor="confirmPassword" style={{ color: 'rgba(209, 213, 219, 1)' }}>
+          <label 
+            htmlFor="confirmPassword" 
+            style={{ 
+              color: 'rgba(209, 213, 219, 1)',
+              fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            }}
+          >
             Confirm Password
           </label>
           <TextField
@@ -331,6 +379,7 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
               '& .MuiOutlinedInput-root': {
                 backgroundColor: 'rgba(24, 24, 24, 0.5)',
                 color: 'rgba(229, 231, 235, 1)',
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                 '& fieldset': {
                   borderColor: 'rgba(75, 85, 99, 0.9)',
                 },
@@ -340,13 +389,20 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
               },
               '& .MuiInputLabel-root': {
                 color: 'rgba(156, 163, 175, 1)',
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
               },
             }}
           />
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label htmlFor="role" style={{ color: 'rgba(209, 213, 219, 1)' }}>
+          <label 
+            htmlFor="role" 
+            style={{ 
+              color: 'rgba(209, 213, 219, 1)',
+              fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            }}
+          >
             Role
           </label>
           <Select
@@ -358,6 +414,7 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
             sx={{
               backgroundColor: 'rgba(24, 24, 24, 0.5)',
               color: 'rgba(229, 231, 235, 1)',
+              fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
               '& .MuiOutlinedInput-notchedOutline': {
                 borderColor: 'rgba(75, 85, 99, 0.9)',
               },
@@ -388,7 +445,11 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
               e.preventDefault();
               onSwitchToLogin();
             }}
-            style={{ color: 'rgba(156, 163, 175, 1)', textDecoration: 'none' }}
+            style={{ 
+              color: 'rgba(156, 163, 175, 1)', 
+              textDecoration: 'none',
+              fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            }}
           >
             Already have an account? Login
           </a>
@@ -423,6 +484,7 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
             border: '2px solid rgba(65, 63, 62, 0.2)',
             boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)',
             backdropFilter: 'blur(4px)',
+            fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             '&:hover': {
               backgroundColor: 'rgba(24,24,27,0.9)',
               boxShadow: '0 0 30px rgba(255, 255, 255, 0.15)',
@@ -499,6 +561,7 @@ const LoginFormExpanded = ({ onClose, onSwitchToRegister }) => {
         width: '100%',
         maxWidth: '400px',
         boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)',
+        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       }}
       initial={{ borderRadius: 9999 }}
       animate={{ borderRadius: 8 }}
@@ -513,7 +576,12 @@ const LoginFormExpanded = ({ onClose, onSwitchToRegister }) => {
       >
         <motion.h2
           layoutId="loginText"
-          style={{ fontSize: '2rem', fontWeight: 600 , margin: '0 auto'}}
+          style={{ 
+            fontSize: '2rem', 
+            fontWeight: 600, 
+            margin: '0 auto',
+            fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          }}
         >
           Login
         </motion.h2>
@@ -538,7 +606,12 @@ const LoginFormExpanded = ({ onClose, onSwitchToRegister }) => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
         onSubmit={onSubmit}
-        style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+        style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '16px',
+          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        }}
       >
         {error && (
           <Alert
@@ -550,6 +623,7 @@ const LoginFormExpanded = ({ onClose, onSwitchToRegister }) => {
               background: 'rgba(255, 255, 255, 0.05)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               color: 'text.primary',
+              fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             }}
           >
             {error}
@@ -557,7 +631,13 @@ const LoginFormExpanded = ({ onClose, onSwitchToRegister }) => {
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label htmlFor="username" style={{ color: 'rgba(209, 213, 219, 1)' }}>
+          <label 
+            htmlFor="username" 
+            style={{ 
+              color: 'rgba(209, 213, 219, 1)',
+              fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            }}
+          >
             Username / Register Number
           </label>
           <TextField
@@ -572,6 +652,7 @@ const LoginFormExpanded = ({ onClose, onSwitchToRegister }) => {
               '& .MuiOutlinedInput-root': {
                 backgroundColor: 'rgba(24, 24, 24, 0.5)',
                 color: 'rgba(229, 231, 235, 1)',
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                 '& fieldset': {
                   borderColor: 'rgba(75, 85, 99, 0.9)',
                 },
@@ -581,13 +662,20 @@ const LoginFormExpanded = ({ onClose, onSwitchToRegister }) => {
               },
               '& .MuiInputLabel-root': {
                 color: 'rgba(156, 163, 175, 1)',
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
               },
             }}
           />
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label htmlFor="password" style={{ color: 'rgba(209, 213, 219, 1)' }}>
+          <label 
+            htmlFor="password" 
+            style={{ 
+              color: 'rgba(209, 213, 219, 1)',
+              fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            }}
+          >
             Password
           </label>
           <TextField
@@ -602,6 +690,7 @@ const LoginFormExpanded = ({ onClose, onSwitchToRegister }) => {
               '& .MuiOutlinedInput-root': {
                 backgroundColor: 'rgba(24, 24, 24, 0.5)',
                 color: 'rgba(229, 231, 235, 1)',
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                 '& fieldset': {
                   borderColor: 'rgba(75, 85, 99, 0.9)',
                 },
@@ -611,6 +700,7 @@ const LoginFormExpanded = ({ onClose, onSwitchToRegister }) => {
               },
               '& .MuiInputLabel-root': {
                 color: 'rgba(156, 163, 175, 1)',
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
               },
             }}
           />
@@ -630,7 +720,11 @@ const LoginFormExpanded = ({ onClose, onSwitchToRegister }) => {
               e.preventDefault();
               onSwitchToRegister();
             }}
-            style={{ color: 'rgba(156, 163, 175, 1)', textDecoration: 'none' }}
+            style={{ 
+              color: 'rgba(156, 163, 175, 1)', 
+              textDecoration: 'none',
+              fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            }}
           >
             Don't have an account? Register
           </a>
@@ -665,6 +759,7 @@ const LoginFormExpanded = ({ onClose, onSwitchToRegister }) => {
             border: '2px solid rgba(65, 63, 62, 0.2)',
             boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)',
             backdropFilter: 'blur(4px)',
+            fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             '&:hover': {
               backgroundColor: 'rgba(24,24,27,0.9)',
               boxShadow: '0 0 30px rgba(255, 255, 255, 0.15)',
@@ -831,7 +926,17 @@ const LandingPage = () => {
                   />
                 )
               ) : (
-                <LoginButton onClick={() => setIsExpanded(true)} />
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    delay: 1, // Delay after title animation
+                    duration: 0.8,
+                    ease: "easeOut"
+                  }}
+                >
+                  <LoginButton onClick={() => setIsExpanded(true)} />
+                </motion.div>
               )}
             </AnimatePresence>
           </div>

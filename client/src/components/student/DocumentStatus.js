@@ -1,19 +1,9 @@
 import React from 'react';
-import { 
-  Card, 
-  CardContent, 
-  Typography, 
-  Box, 
-  Chip,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Divider
-} from '@mui/material';
+import { Card, CardContent, Typography, Box, Chip, Stack } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningIcon from '@mui/icons-material/Warning';
 import PendingIcon from '@mui/icons-material/Pending';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 
 const DocumentStatus = ({ documents }) => {
   // Group documents by internship
@@ -31,11 +21,11 @@ const DocumentStatus = ({ documents }) => {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'verified':
-        return <CheckCircleIcon color="success" />;
+        return <CheckCircleIcon sx={{ color: 'success.main', fontSize: '1.25rem' }} />;
       case 'unverified':
-        return <WarningIcon color="warning" />;
+        return <WarningIcon sx={{ color: 'warning.main', fontSize: '1.25rem' }} />;
       case 'pending':
-        return <PendingIcon color="disabled" />;
+        return <PendingIcon sx={{ color: 'text.disabled', fontSize: '1.25rem' }} />;
       default:
         return null;
     }
@@ -46,36 +36,41 @@ const DocumentStatus = ({ documents }) => {
       case 'verified':
         return (
           <Chip 
-            label="Verified" 
+            label="Verified"
             size="small"
             sx={{ 
               bgcolor: 'success.main',
               color: 'success.contrastText',
-              '&:hover': { bgcolor: 'success.dark' }
+              fontSize: '0.75rem',
+              height: '24px'
             }}
           />
         );
       case 'unverified':
         return (
           <Chip 
-            label="Unverified" 
+            label="Unverified"
             size="small"
             sx={{ 
               bgcolor: 'warning.main',
               color: 'warning.contrastText',
-              '&:hover': { bgcolor: 'warning.dark' }
+              fontSize: '0.75rem',
+              height: '24px'
             }}
           />
         );
       case 'pending':
         return (
           <Chip 
-            label="Pending" 
+            label="Pending Upload"
             size="small"
-            variant="outlined"
             sx={{ 
+              bgcolor: 'transparent',
+              border: '1px solid',
               borderColor: 'text.disabled',
-              color: 'text.disabled'
+              color: 'text.disabled',
+              fontSize: '0.75rem',
+              height: '24px'
             }}
           />
         );
@@ -85,66 +80,75 @@ const DocumentStatus = ({ documents }) => {
   };
 
   return (
-    <Box sx={{ mb: 4 }}>
-      <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary' }}>
-        Document Status
-      </Typography>
-      
+    <Stack spacing={3}>
       {Object.entries(documentsByInternship).map(([internshipId, { internshipName, documents }]) => (
         <Card 
           key={internshipId}
           sx={{ 
-            mb: 2,
-            borderRadius: 2,
             background: 'rgba(255, 255, 255, 0.05)',
             backdropFilter: 'blur(10px)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              transform: 'translateY(-2px)',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-            }
+            borderRadius: 3
           }}
         >
           <CardContent sx={{ p: 3 }}>
-            <Typography variant="subtitle1" sx={{ mb: 1, color: 'text.secondary' }}>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                color: 'text.primary',
+                fontSize: '1rem',
+                fontWeight: 500,
+                mb: 2
+              }}
+            >
               {internshipName}
             </Typography>
-            <Typography variant="body2" sx={{ mb: 2, color: 'text.disabled' }}>
-              {documents.filter(d => d.status === 'verified').length} verified, 
-              {documents.filter(d => d.status === 'unverified').length} unverified, 
+            <Typography 
+              sx={{ 
+                color: 'text.secondary',
+                fontSize: '0.875rem',
+                mb: 3
+              }}
+            >
+              {documents.filter(d => d.status === 'verified').length} verified,{' '}
+              {documents.filter(d => d.status === 'unverified').length} unverified,{' '}
               {documents.filter(d => d.status === 'pending').length} pending
             </Typography>
             
-            <List sx={{ p: 0 }}>
-              {documents.map((doc, index) => (
-                <React.Fragment key={doc.id}>
-                  {index > 0 && <Divider />}
-                  <ListItem 
+            <Stack spacing={2}>
+              {documents.map((doc) => (
+                <Box
+                  key={doc.id}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: 'rgba(255, 255, 255, 0.03)',
+                    '&:hover': {
+                      bgcolor: 'rgba(255, 255, 255, 0.05)',
+                    }
+                  }}
+                >
+                  <DescriptionOutlinedIcon sx={{ color: 'text.secondary', fontSize: '1.25rem' }} />
+                  <Typography 
                     sx={{ 
-                      py: 1.5,
-                      '&:hover': {
-                        bgcolor: 'action.hover',
-                        borderRadius: 1
-                      }
+                      flex: 1,
+                      color: 'text.primary',
+                      fontSize: '0.875rem'
                     }}
                   >
-                    <ListItemIcon>
-                      {getStatusIcon(doc.status)}
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary={doc.name}
-                      sx={{ color: 'text.primary' }}
-                    />
-                    {getStatusChip(doc.status)}
-                  </ListItem>
-                </React.Fragment>
+                    {doc.name}
+                  </Typography>
+                  {getStatusChip(doc.status)}
+                </Box>
               ))}
-            </List>
+            </Stack>
           </CardContent>
         </Card>
       ))}
-    </Box>
+    </Stack>
   );
 };
 

@@ -1,120 +1,79 @@
-import React, { useContext } from 'react';
-import { Container, Typography, Box, Paper, Grid, Card, CardContent, CardMedia } from '@mui/material';
+import React, { useContext, useState } from 'react';
+import { Container, Box, Grid, Typography } from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContext } from '../../context/AuthContext';
 import Navbar from '../layout/Navbar';
-
-const images = [
-  "https://cdn.magicdecor.in/com/2023/10/20174720/Anime-Scenery-Wallpaper-for-Walls.jpg",
-  "https://m.media-amazon.com/images/I/71mgpWBEXHL.jpg",
-  "https://backiee.com/static/wallpapers/560x315/209636.jpg"
-];
+import WelcomeScreen from './WelcomeScreen';
+import QuoteGenerator from './QuoteGenerator';
+import DocumentStatus from './DocumentStatus';
+import InternshipOffers from './InternshipOffers';
+import { mockDocuments, mockOffers } from '../../data/mockData';
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
-  const [currentImage, setCurrentImage] = React.useState(0);
+  const [showWelcome, setShowWelcome] = useState(true);
 
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+  const handleAnimationComplete = () => {
+    setTimeout(() => {
+      setShowWelcome(false);
+    }, 2000);
+  };
 
   return (
     <>
       <Navbar title="Student Dashboard" role="student" />
-      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Box sx={{ position: 'relative', height: '50vh', overflow: 'hidden', mb: 4 }}>
-          {images.map((image, index) => (
-            <Box
-              key={index}
-              component="img"
-              src={image}
-              alt={`Slide ${index + 1}`}
-              sx={{
-                position: 'absolute',
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                opacity: index === currentImage ? 1 : 0,
-                transition: 'opacity 1s ease-in-out'
-              }}
-            />
-          ))}
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              bgcolor: 'rgba(0, 0, 0, 0.5)',
-              color: 'white',
-              p: 2
-            }}
+      <AnimatePresence>
+        {showWelcome && (
+          <motion.div
+            initial={{ y: 0 }}
+            exit={{ y: -1000 }}
+            transition={{ duration: 1, ease: [0.23, 0.86, 0.39, 0.96] }}
           >
-            <Typography variant="h4">Welcome, {user.username}!</Typography>
-            <Typography variant="body1">
-              Manage your internship details and documents
+            <WelcomeScreen username={user.username} onAnimationComplete={handleAnimationComplete} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <Box 
+        sx={{ 
+          flexGrow: 1, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          minHeight: '100vh',
+          opacity: showWelcome ? 0 : 1,
+          transition: 'opacity 0.5s ease-in-out',
+          bgcolor: 'background.default',
+          pt: 12,
+          px: 3
+        }}
+      >
+        <Container maxWidth="xl">
+          <Box sx={{ textAlign: 'center', mb: 6 }}>
+            <Typography 
+              variant="h4" 
+              sx={{ 
+                mb: 4,
+                color: 'text.primary',
+                fontWeight: 500,
+                fontSize: { xs: '1.75rem', md: '2.25rem' }
+              }}
+            >
+              Hello, {user.username}! 
             </Typography>
+            <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
+              <QuoteGenerator />
+            </Box>
           </Box>
-        </Box>
 
-        <Grid container spacing={4} sx={{ flexGrow: 1 }}>
-          <Grid item xs={12} md={4}>
-            <Card sx={{ height: '100%' }}>
-              <CardMedia
-                component="img"
-                height="140"
-                image="https://source.unsplash.com/random?internship"
-                alt="Internship"
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  Edit Your Details
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Update your internship information including company details, stipend, and duration.
-                </Typography>
-              </CardContent>
-            </Card>
+          <Grid container spacing={4}>
+            <Grid item xs={12} lg={8}>
+              <DocumentStatus documents={mockDocuments} />
+            </Grid>
+            
+            <Grid item xs={12} lg={4}>
+              <InternshipOffers offers={mockOffers} />
+            </Grid>
           </Grid>
-          <Grid item xs={12} md={4}>
-            <Card sx={{ height: '100%' }}>
-              <CardMedia
-                component="img"
-                height="140"
-                image="https://source.unsplash.com/random?documents"
-                alt="Documents"
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  Upload Documents
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Submit your internship documents such as offer letters, completion certificates, and reports.
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Card sx={{ height: '100%' }}>
-              <CardMedia
-                component="img"
-                height="140"
-                image="https://source.unsplash.com/random?status"
-                alt="Status"
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  Track Progress
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Monitor your internship status and document submission progress.
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+        </Container>
       </Box>
     </>
   );

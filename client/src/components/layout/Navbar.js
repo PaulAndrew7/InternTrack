@@ -63,23 +63,10 @@ const Navbar = ({ title, role }) => {
             InternTrack
           </Typography>
 
-          {!isMobile && user && (
+          {user && (
             <Box sx={{ ml: 4, display: 'flex', gap: 2 }}>
               {role === 'student' && (
                 <>
-                  <Button
-                    component={Link}
-                    to="/student/dashboard"
-                    sx={{
-                      color: 'text.secondary',
-                      '&:hover': {
-                        color: 'text.primary',
-                        background: 'rgba(255, 255, 255, 0.05)',
-                      },
-                    }}
-                  >
-                    Dashboard
-                  </Button>
                   <Button
                     component={Link}
                     to="/student/details"
@@ -172,7 +159,7 @@ const Navbar = ({ title, role }) => {
             <>
               <Button
                 component={Link}
-                to="/"
+                to="/login"
                 sx={{
                   color: 'text.secondary',
                   '&:hover': {

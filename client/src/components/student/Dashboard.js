@@ -11,15 +11,33 @@ import { mockDocuments, mockOffers } from '../../data/mockData';
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
-  const [showWelcome, setShowWelcome] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(() => {
+    // Check if welcome screen has been shown in this session
+    return !localStorage.getItem('welcomeShown');
+  });
 
   useEffect(() => {
-    // Show welcome screen for 3 seconds
-    const timer = setTimeout(() => {
-      setShowWelcome(false);
-    }, 3000);
+    if (showWelcome) {
+      // Set the flag in localStorage and hide welcome screen after 3 seconds
+      const timer = setTimeout(() => {
+        localStorage.setItem('welcomeShown', 'true');
+        setShowWelcome(false);
+      }, 3000);
 
-    return () => clearTimeout(timer);
+      return () => clearTimeout(timer);
+    }
+  }, [showWelcome]);
+
+  // Clear the welcomeShown flag when user logs out
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'user' && !e.newValue) {
+        localStorage.removeItem('welcomeShown');
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   return (
@@ -41,7 +59,7 @@ const Dashboard = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <Navbar />
+          <Navbar role="student" />
           <Box 
             sx={{ 
               display: 'flex',

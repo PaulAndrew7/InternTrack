@@ -69,6 +69,19 @@ const Navbar = ({ title, role }) => {
                 <>
                   <Button
                     component={Link}
+                    to="/student/dashboard"
+                    sx={{
+                      color: 'text.secondary',
+                      '&:hover': {
+                        color: 'text.primary',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                      },
+                    }}
+                  >
+                    Dashboard
+                  </Button>
+                  <Button
+                    component={Link}
                     to="/student/details"
                     sx={{
                       color: 'text.secondary',
@@ -78,7 +91,7 @@ const Navbar = ({ title, role }) => {
                       },
                     }}
                   >
-                    My Details
+                    Edit Details
                   </Button>
                   <Button
                     component={Link}
@@ -91,7 +104,7 @@ const Navbar = ({ title, role }) => {
                       },
                     }}
                   >
-                    Documents
+                    Upload Documents
                   </Button>
                 </>
               )}

@@ -28,11 +28,13 @@ const Dashboard = () => {
           variant="h4" 
           sx={{ 
             color: 'text.primary',
-            fontWeight: 500,
-            fontSize: '1.25rem',
+            fontWeight: 600,
+            textAlign: 'center', // Center the text
+            fontSize: '2.2rem', // Increase font size
+            mb: 1
           }}
         >
-          Welcome, {user.username}
+          Welcome, {user?.username || user?.name || 'User'}!
         </Typography>
 
         <Box sx={{ maxWidth: '800px', mx: 'auto', width: '100%' }}>

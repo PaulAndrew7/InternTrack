@@ -1,50 +1,37 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
+
+// Create axios instance with base URL
+const api = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000'
+});
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Set auth token
-  if (token) {
-    axios.defaults.headers.common['x-auth-token'] = token;
-  } else {
-    delete axios.defaults.headers.common['x-auth-token'];
-  }
-
-  // Load user
-  const loadUser = async () => {
-    try {
-      if (token) {
-        // Decode token to get user data
-        const decoded = jwtDecode(token);
-        setUser(decoded.user);
-        setIsAuthenticated(true);
-      }
-    } catch (err) {
-      localStorage.removeItem('token');
-      setToken(null);
-      setUser(null);
-      setIsAuthenticated(false);
+  // Load user from localStorage on initial load
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      setIsAuthenticated(true);
     }
     setLoading(false);
-  };
+  }, []);
 
   // Register user
   const register = async (formData) => {
     try {
       console.log('Sending registration data:', formData);
-      const res = await axios.post('/api/auth/register', formData);
+      const res = await api.post('/api/auth/register', formData);
       
       if (res.data.success) {
-        localStorage.setItem('token', res.data.token);
-        setToken(res.data.token);
+        localStorage.setItem('user', JSON.stringify(res.data.user));
         setUser(res.data.user);
         setIsAuthenticated(true);
         setError(null);
@@ -65,28 +52,32 @@ export const AuthProvider = ({ children }) => {
   // Login user
   const login = async (formData) => {
     try {
-      const res = await axios.post('/api/auth/login', formData);
+      console.log('Sending login data:', formData);
+      const res = await api.post('/api/auth/login', formData);
       
       if (res.data.success) {
-        localStorage.setItem('token', res.data.token);
-        setToken(res.data.token);
+        localStorage.setItem('user', JSON.stringify(res.data.user));
         setUser(res.data.user);
         setIsAuthenticated(true);
         setError(null);
         return true;
+      } else {
+        setError(res.data.message || 'Login failed');
+        return false;
       }
     } catch (err) {
-      setError(err.response.data.message || 'Login failed');
+      console.error('Login error:', err);
+      setError(err.response?.data?.message || 'Login failed');
       return false;
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   // Logout user
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     localStorage.removeItem('welcomeShown');
-    setToken(null);
     setUser(null);
     setIsAuthenticated(false);
   };
@@ -96,15 +87,10 @@ export const AuthProvider = ({ children }) => {
     setError(null);
   };
 
-  useEffect(() => {
-    loadUser();
-  }, [token]);
-
   return (
     <AuthContext.Provider
       value={{
         user,
-        token,
         isAuthenticated,
         loading,
         error,

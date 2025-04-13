@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const { google } = require("googleapis");
 const User = require("../models/User");
+const bcrypt = require("bcrypt");
 
 // Google Drive setup
 const auth = new google.auth.GoogleAuth({
@@ -41,107 +40,77 @@ router.post("/register", async (req, res) => {
 
   try {
     // Check if user exists
-    let user = await User.findOne({ username });
-    if (user) {
-      return res.status(400).json({ success: false, message: "User already exists" });
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.json({ success: false, message: "User already exists!" });
     }
 
     // Create Google Drive folder
     const folderId = await createUserFolder(username);
     if (!folderId) {
-      return res.status(500).json({ success: false, message: "Failed to create Google Drive folder" });
+      return res.json({ success: false, message: "Failed to create Google Drive folder!" });
     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
     // Create user
-    user = new User({
-      username,
-      password: hashedPassword,
-      role,
-      folderId
-    });
+    const newUser = new User({ username, password, role, folderId });
+    await newUser.save();
 
-    await user.save();
-
-    // Create JWT token
-    const payload = {
-      user: {
-        id: user.id,
-        role: user.role,
-        username: user.username
-      }
-    };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ 
-          success: true, 
-          token,
-          user: {
-            id: user.id,
-            username: user.username,
-            role: user.role,
-            folderId: user.folderId
-          }
-        });
-      }
-    );
+    res.json({ success: true, message: "Registration successful!", folderId });
   } catch (error) {
-    console.error("Registration error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("❌ Registration error:", error);
+    res.json({ success: false, message: "Registration failed!" });
   }
 });
 
 // @route   POST /api/auth/login
-// @desc    Authenticate user & get token
+// @desc    Authenticate user
 // @access  Public
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
+  
+  console.log("=== Login Attempt ===");
+  console.log("Request body:", req.body);
+  console.log("Username:", username);
+  console.log("Password:", password);
 
   try {
-    // Check if user exists
-    let user = await User.findOne({ username });
-
-    if (!user) {
-      return res.status(400).json({ success: false, message: "Invalid credentials" });
+    // First check if user exists
+    const user = await User.findOne({ username });
+    console.log("=== Database Query ===");
+    console.log("User found:", user ? "Yes" : "No");
+    
+    if (user) {
+      console.log("=== User Details ===");
+      console.log("Username:", user.username);
+      console.log("Stored password hash:", user.password);
+      console.log("Provided password:", password);
+      
+      // Compare the provided password with the stored hash
+      const isMatch = await bcrypt.compare(password, user.password);
+      console.log("Password match:", isMatch);
+      
+      console.log("User role:", user.role);
+      console.log("User folderId:", user.folderId);
     }
 
-    // Compare password
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res.status(400).json({ success: false, message: "Invalid credentials" });
+    if (user && await bcrypt.compare(password, user.password)) {
+      console.log("=== Login Success ===");
+      res.json({ 
+        success: true, 
+        user: {
+          username: user.username,
+          role: user.role,
+          folderId: user.folderId
+        }
+      });
+    } else {
+      console.log("=== Login Failure ===");
+      console.log("Reason:", user ? "Password mismatch" : "User not found");
+      res.json({ success: false, message: "Invalid credentials" });
     }
-
-    // Create JWT payload
-    const payload = {
-      user: {
-        id: user.id,
-        username: user.username,
-        role: user.role
-      }
-    };
-
-    // Sign token
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: "5d" },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ success: true, token, user: payload.user });
-      }
-    );
-  } catch (err) {
-    console.error("Login error:", err.message);
-    res.status(500).json({ success: false, message: "Server error" });
+  } catch (error) {
+    console.error("❌ Login error:", error);
+    res.json({ success: false, message: "Login failed!" });
   }
 });
 

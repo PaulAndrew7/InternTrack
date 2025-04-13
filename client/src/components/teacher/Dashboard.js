@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Container, Typography, Box, Paper, Grid, Button } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Box, Typography } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContext } from '../../context/AuthContext';
 import Navbar from '../layout/Navbar';
 import WelcomeScreen from '../student/WelcomeScreen';
+import QuoteGenerator from '../student/QuoteGenerator';
 import axios from 'axios';
 
 const Dashboard = () => {
@@ -65,79 +65,65 @@ const Dashboard = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <Navbar title="Teacher Dashboard" role="teacher" />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={3}>
-              {/* Welcome Section */}
-              <Grid item xs={12}>
-                <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column' }}>
-                  <Typography variant="h4" gutterBottom>
-                    Welcome, {user?.username || 'Teacher'}
-                  </Typography>
-                  <Typography variant="body1">
-                    Manage student internship records and documents from this dashboard.
-                  </Typography>
-                </Paper>
-              </Grid>
+          <Navbar role="teacher" />
+          <Box 
+            sx={{ 
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4,
+              p: 4,
+              minHeight: '100vh',
+              bgcolor: 'background.default',
+              mt: '64px' // Add margin top to account for fixed navbar
+            }}
+          >
+            <Typography 
+              variant="h4" 
+              sx={{ 
+                color: 'text.primary',
+                fontWeight: 600,
+                textAlign: 'center',
+                fontSize: '2.2rem',
+                mb: 1
+              }}
+            >
+              Welcome, {user?.username || 'Teacher'}!
+            </Typography>
 
-              {/* Stats Cards */}
-              <Grid item xs={12} md={4}>
-                <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', height: 140 }}>
+            <Box sx={{ maxWidth: '800px', mx: 'auto', width: '100%' }}>
+              <QuoteGenerator />
+            </Box>
+
+            {/* Stats Cards */}
+            <Box sx={{ maxWidth: '1200px', mx: 'auto', width: '100%' }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3 }}>
+                <Box sx={{ p: 3, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
                   <Typography variant="h6" color="primary" gutterBottom>
                     Total Students
                   </Typography>
-                  <Typography variant="h3" component="div" sx={{ flexGrow: 1 }}>
+                  <Typography variant="h3" component="div">
                     {loading ? '...' : stats.totalStudents}
                   </Typography>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', height: 140 }}>
+                </Box>
+                <Box sx={{ p: 3, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
                   <Typography variant="h6" color="primary" gutterBottom>
                     Internships Obtained
                   </Typography>
-                  <Typography variant="h3" component="div" sx={{ flexGrow: 1 }}>
+                  <Typography variant="h3" component="div">
                     {loading ? '...' : stats.internshipObtained}
                   </Typography>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', height: 140 }}>
+                </Box>
+                <Box sx={{ p: 3, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
                   <Typography variant="h6" color="primary" gutterBottom>
                     Documents Submitted
                   </Typography>
-                  <Typography variant="h3" component="div" sx={{ flexGrow: 1 }}>
+                  <Typography variant="h3" component="div">
                     {loading ? '...' : stats.documentsSubmitted}
                   </Typography>
-                </Paper>
-              </Grid>
-
-              {/* Quick Actions */}
-              <Grid item xs={12}>
-                <Paper sx={{ p: 3 }}>
-                  <Typography variant="h5" gutterBottom>
-                    Quick Actions
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
-                    <Button 
-                      variant="contained" 
-                      component={Link} 
-                      to="/view-records"
-                    >
-                      View Student Records
-                    </Button>
-                    <Button 
-                      variant="contained" 
-                      component={Link} 
-                      to="/upload-excel"
-                    >
-                      Upload Excel File
-                    </Button>
-                  </Box>
-                </Paper>
-              </Grid>
-            </Grid>
-          </Container>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
         </motion.div>
       )}
     </AnimatePresence>

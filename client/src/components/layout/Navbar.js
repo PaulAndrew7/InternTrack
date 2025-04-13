@@ -46,7 +46,7 @@ const Navbar = ({ title, role }) => {
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
           <Typography
             component={Link}
-            to="/student/dashboard"
+            to={role === 'teacher' ? '/teacher/dashboard' : '/student/dashboard'}
             sx={{
               fontSize: '1.5rem',
               fontWeight: 700,

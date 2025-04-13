@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, Box } from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 
 const quotes = [
@@ -17,10 +18,19 @@ const quotes = [
 
 const QuoteGenerator = () => {
   const [quote, setQuote] = useState({ quote: "", author: "" });
+  const [key, setKey] = useState(0);
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * quotes.length);
     setQuote(quotes[randomIndex]);
+
+    const interval = setInterval(() => {
+      const newRandomIndex = Math.floor(Math.random() * quotes.length);
+      setQuote(quotes[newRandomIndex]);
+      setKey(prevKey => prevKey + 1);
+    }, 10000);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -34,34 +44,63 @@ const QuoteGenerator = () => {
       }}
     >
       <CardContent sx={{ p: 0 }}>
-        <Box sx={{ display: 'flex', gap: 2 }}>
+        <Box sx={{ 
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 2,
+          width: '100%'
+        }}>
           <FormatQuoteIcon 
             sx={{ 
               color: 'text.secondary',
-              fontSize: '1.5rem',
-              mt: 0.5
+              fontSize: '2rem',
+              flexShrink: 0
             }} 
           />
-          <Box>
-            <Typography 
-              sx={{ 
-                color: 'text.primary',
-                fontSize: '1rem',
-                fontStyle: 'italic',
-                mb: 1,
-                lineHeight: 1.5
-              }}
-            >
-              {quote.quote}
-            </Typography>
-            <Typography 
-              sx={{ 
-                color: 'text.secondary',
-                fontSize: '0.875rem'
-              }}
-            >
-              — {quote.author}
-            </Typography>
+          <Box sx={{ 
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '80px'
+          }}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={key}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                style={{
+                  width: '100%',
+                  textAlign: 'center'
+                }}
+              >
+                <Typography 
+                  sx={{ 
+                    color: 'text.primary',
+                    fontSize: '1.1rem',
+                    fontStyle: 'italic',
+                    mb: 1,
+                    lineHeight: 1.5,
+                    maxWidth: '600px',
+                    mx: 'auto'
+                  }}
+                >
+                  {quote.quote}
+                </Typography>
+                <Typography 
+                  sx={{ 
+                    color: 'text.secondary',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  — {quote.author}
+                </Typography>
+              </motion.div>
+            </AnimatePresence>
           </Box>
         </Box>
       </CardContent>

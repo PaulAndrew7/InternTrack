@@ -3,12 +3,21 @@ const router = express.Router();
 const { google } = require("googleapis");
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
+const fs = require("fs");
+const path = require("path");
 
 // Google Drive setup
-const auth = new google.auth.GoogleAuth({
-  keyFile: process.env.GOOGLE_DRIVE_KEYFILE,
-  scopes: ["https://www.googleapis.com/auth/drive"],
-});
+const keyFilePath = path.resolve(process.env.GOOGLE_DRIVE_KEYFILE);
+const credentials = JSON.parse(fs.readFileSync(keyFilePath, 'utf8'));
+
+// Explicitly use JWT for authentication
+const auth = new google.auth.JWT(
+  credentials.client_email,
+  null, // keyFile path is not needed when private_key is provided directly
+  credentials.private_key.replace(/\\n/g, '\n'), // Ensure newlines in private key are correct
+  ["https://www.googleapis.com/auth/drive"]
+);
+
 const drive = google.drive({ version: "v3", auth });
 
 // Create a user folder in Google Drive
@@ -20,17 +29,23 @@ const createUserFolder = async (username) => {
       parents: [process.env.GOOGLE_DRIVE_MAIN_FOLDER],
     };
 
+    // Authorize the client before making the API call
+    await auth.authorize();
+
     const folder = await drive.files.create({
       resource: folderMetadata,
       fields: "id",
     });
 
+    console.log("✅ Folder created:", folder.data.id);
     return folder.data.id;
   } catch (error) {
-    console.error("Error creating folder:", error.message);
+    // Log the detailed error from Google API if available
+    console.error("❌ Error creating folder:", error.response?.data || error.errors || error.message);
     return null;
   }
 };
+
 
 // @route   POST api/auth/register
 // @desc    Register a user
@@ -39,23 +54,52 @@ router.post("/register", async (req, res) => {
   const { username, password, role } = req.body;
 
   try {
+    console.log("=== Registration Attempt ===");
+    console.log("Request body:", req.body);
+
     // Check if user exists
     const existingUser = await User.findOne({ username });
     if (existingUser) {
+      console.log("User already exists:", username);
       return res.json({ success: false, message: "User already exists!" });
     }
 
     // Create Google Drive folder
+    console.log("Creating Google Drive folder for:", username);
     const folderId = await createUserFolder(username);
     if (!folderId) {
+      console.log("Failed to create Google Drive folder");
       return res.json({ success: false, message: "Failed to create Google Drive folder!" });
     }
+    console.log("Google Drive folder created with ID:", folderId);
 
-    // Create user
-    const newUser = new User({ username, password, role, folderId });
-    await newUser.save();
+    // Create user with plain text password
+    console.log("Creating new user in MongoDB");
+    const newUser = new User({ 
+      username, 
+      password, // Store plain text password
+      role, 
+      folderId 
+    });
+    console.log("User object to save:", newUser);
+    
+    try {
+      await newUser.save();
+      console.log("User successfully saved to MongoDB");
+    } catch (saveError) {
+      console.error("Error saving user to MongoDB:", saveError);
+      throw saveError;
+    }
 
-    res.json({ success: true, message: "Registration successful!", folderId });
+    res.json({ 
+      success: true, 
+      message: "Registration successful!", 
+      user: {
+        username: newUser.username,
+        role: newUser.role,
+        folderId: newUser.folderId
+      }
+    });
   } catch (error) {
     console.error("❌ Registration error:", error);
     res.json({ success: false, message: "Registration failed!" });
@@ -71,7 +115,6 @@ router.post("/login", async (req, res) => {
   console.log("=== Login Attempt ===");
   console.log("Request body:", req.body);
   console.log("Username:", username);
-  console.log("Password:", password);
 
   try {
     // First check if user exists
@@ -82,31 +125,37 @@ router.post("/login", async (req, res) => {
     if (user) {
       console.log("=== User Details ===");
       console.log("Username:", user.username);
-      console.log("Stored password hash:", user.password);
-      console.log("Provided password:", password);
+      console.log("Stored password type:", typeof user.password);
+      console.log("Stored password length:", user.password.length);
+      console.log("Provided password type:", typeof password);
+      console.log("Provided password length:", password.length);
       
-      // Compare the provided password with the stored hash
-      const isMatch = await bcrypt.compare(password, user.password);
-      console.log("Password match:", isMatch);
+      // Trim and normalize both passwords
+      const storedPassword = String(user.password).trim();
+      const providedPassword = String(password).trim();
       
-      console.log("User role:", user.role);
-      console.log("User folderId:", user.folderId);
-    }
-
-    if (user && await bcrypt.compare(password, user.password)) {
-      console.log("=== Login Success ===");
-      res.json({ 
-        success: true, 
-        user: {
-          username: user.username,
-          role: user.role,
-          folderId: user.folderId
-        }
-      });
+      console.log("Normalized stored password:", storedPassword);
+      console.log("Normalized provided password:", providedPassword);
+      
+      // Compare normalized passwords
+      if (storedPassword === providedPassword) {
+        console.log("=== Login Success ===");
+        res.json({ 
+          success: true, 
+          user: {
+            username: user.username,
+            role: user.role,
+            folderId: user.folderId
+          }
+        });
+      } else {
+        console.log("=== Login Failed - Invalid Password ===");
+        console.log("Password comparison failed");
+        res.json({ success: false, message: "Invalid credentials!" });
+      }
     } else {
-      console.log("=== Login Failure ===");
-      console.log("Reason:", user ? "Password mismatch" : "User not found");
-      res.json({ success: false, message: "Invalid credentials" });
+      console.log("=== Login Failed - User Not Found ===");
+      res.json({ success: false, message: "Invalid credentials!" });
     }
   } catch (error) {
     console.error("❌ Login error:", error);

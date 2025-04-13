@@ -155,7 +155,7 @@ const RegisterFormExpanded = ({ onClose, onSwitchToLogin }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
       if (user.role === 'student') {
         navigate('/student/dashboard');
       } else if (user.role === 'teacher') {
@@ -520,7 +520,7 @@ const LoginFormExpanded = ({ onClose, onSwitchToRegister }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
       if (user.role === 'student') {
         navigate('/student/dashboard');
       } else if (user.role === 'teacher') {

@@ -4,8 +4,10 @@ import { Box, Typography, Button, Card, CardContent, Chip, Grid } from '@mui/mat
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import Navbar from '../layout/Navbar';
+import { AuthContext } from '../../context/AuthContext';
 
 const InternshipManagement = () => {
+    const { user } = useContext(AuthContext);
     const [internships, setInternships] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -22,7 +24,7 @@ const InternshipManagement = () => {
             const allInternships = response.data.data;
             // Filter internships for the specific student (hardcoded for now)
             const studentInternships = allInternships.filter(
-                internship => internship['Register No'] === '3122225001090'
+                internship => internship['Register No'] === user.username
             );
             setInternships(studentInternships);
             setLoading(false);

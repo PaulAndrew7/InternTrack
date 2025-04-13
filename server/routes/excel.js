@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Path to the Excel file
-const filePath = path.join('d:/intern_web/student_data.xlsx');
+const filePath = path.join(__dirname, '../..', 'student_data.xlsx');
 
 // Helper function to find internship index by register number and company
 const findInternshipIndex = (data, registerNo, companyName) => {
@@ -46,85 +46,140 @@ router.get('/data', (req, res) => {
     }
 });
 
-// @route   PUT api/excel/update/:id
-// @desc    Update internship by ID
-// @access  Public (should be secured in production)
-router.put('/update/:id', (req, res) => {
+// Endpoint to add new internship
+router.post('/add', (req, res) => {
+    console.log('Add internship request received:', req.body);
+    
     try {
-      console.log(`Received update request for ID: ${req.params.id}`);
-      console.log('Request body:', req.body);
-      
-      const id = parseInt(req.params.id);
-      const updatedData = req.body;
-      
-      // Ensure we have the required data
-      if (!updatedData || !updatedData['Register No']) {
-        return res.status(400).json({ success: false, message: 'Missing required student data' });
-      }
-  
-      if (isNaN(id)) {
-        return res.status(400).json({ success: false, message: 'Invalid internship ID' });
-      }
-      
-      // Check if Excel file exists
-      if (!fs.existsSync(filePath)) {
-        console.error('Excel file not found at:', filePath);
-        return res.status(404).json({ success: false, message: 'Excel file not found' });
-      }
-  
-      // Load the workbook and worksheet
-      const workbook = xlsx.readFile(filePath);
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-  
-      // Convert sheet to JSON array
-      const data = xlsx.utils.sheet_to_json(worksheet);
-      console.log(`Total records in Excel: ${data.length}`);
-  
-      // Get all internships for this user
-      const studentInternships = data.filter(row => row['Register No'] === updatedData['Register No']);
-      console.log(`Found ${studentInternships.length} internships for student ${updatedData['Register No']}`);
-  
-      if (!studentInternships.length || !studentInternships[id]) {
-        return res.status(404).json({ success: false, message: 'Internship not found for this user' });
-      }
-  
-      // Find the index of this internship in the full data
-      let internshipIndexInSheet = -1;
-      let matchCount = -1;
-      for (let i = 0; i < data.length; i++) {
-        if (data[i]['Register No'] === updatedData['Register No']) {
-          matchCount++;
-          if (matchCount === id) {
-            internshipIndexInSheet = i;
-            break;
-          }
+        if (!fs.existsSync(filePath)) {
+            console.log('Excel file not found at:', filePath);
+            return res.status(404).json({ 
+                error: "Excel file not found",
+                message: "Please upload an Excel file first"
+            });
         }
-      }
-  
-      if (internshipIndexInSheet === -1) {
-        return res.status(404).json({ success: false, message: 'Internship not found in sheet' });
-      }
-      
-      console.log(`Found internship at index ${internshipIndexInSheet} in the Excel sheet`);
-  
-      // Replace the internship data
-      data[internshipIndexInSheet] = updatedData;
-  
-      // Convert JSON back to worksheet
-      const updatedSheet = xlsx.utils.json_to_sheet(data);
-      workbook.Sheets[sheetName] = updatedSheet;
-  
-      // Write back to file
-      xlsx.writeFile(workbook, filePath);
-  
-      return res.json({ success: true, message: 'Internship updated successfully' });
-  
+
+        const workbook = xlsx.readFile(filePath);
+        const sheetName = workbook.SheetNames[0];
+        const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+        
+        // Check if internship already exists for this student and company
+        const existingIndex = findInternshipIndex(
+            data,
+            req.body['Register No'],
+            req.body['Company Name']
+        );
+
+        if (existingIndex !== -1) {
+            return res.status(400).json({
+                error: "Internship already exists",
+                message: "An internship with this company already exists for this student"
+            });
+        }
+
+        // Add new internship
+        data.push(req.body);
+
+        // Convert back to worksheet
+        const worksheet = xlsx.utils.json_to_sheet(data);
+        workbook.Sheets[sheetName] = worksheet;
+
+        // Write back to file
+        xlsx.writeFile(workbook, filePath);
+
+        console.log('Internship added successfully');
+        res.json({
+            success: true,
+            message: "Internship added successfully",
+            internship: req.body
+        });
     } catch (error) {
-      console.error('Update Error:', error);
-      return res.status(500).json({ success: false, message: 'Server error during update' });
+        console.error('Error adding internship:', error);
+        res.status(500).json({ 
+            error: "Error adding internship",
+            message: error.message
+        });
     }
-  });
+});
+
+// Endpoint to update internship data
+router.put('/update/:id', (req, res) => {
+    console.log('Update request received for ID:', req.params.id);
+    console.log('Request body:', req.body);
+    
+    try {
+        if (!fs.existsSync(filePath)) {
+            console.log('Excel file not found at:', filePath);
+            return res.status(404).json({ 
+                error: "Excel file not found",
+                message: "Please upload an Excel file first"
+            });
+        }
+
+        const workbook = xlsx.readFile(filePath);
+        const sheetName = workbook.SheetNames[0];
+        const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+        
+        console.log('Total records in Excel:', data.length);
+        
+        // Filter internships for the specific student
+        const studentInternships = data.filter(
+            internship => internship['Register No'] === req.body['Register No']
+        );
+        
+        console.log('Found student internships:', studentInternships.length);
+        
+        // Get the specific internship using the index from the filtered list
+        const internshipIndex = parseInt(req.params.id);
+        if (internshipIndex < 0 || internshipIndex >= studentInternships.length) {
+            console.log('Invalid internship index:', internshipIndex);
+            return res.status(404).json({ 
+                error: "Internship not found",
+                message: "The internship you're trying to update doesn't exist"
+            });
+        }
+
+        // Find the actual index in the full data array
+        const actualIndex = findInternshipIndex(
+            data, 
+            studentInternships[internshipIndex]['Register No'],
+            studentInternships[internshipIndex]['Company Name']
+        );
+
+        if (actualIndex === -1) {
+            console.log('Could not find internship in full dataset');
+            return res.status(404).json({ 
+                error: "Internship not found",
+                message: "Could not locate the internship in the dataset"
+            });
+        }
+
+        console.log('Found internship at index:', actualIndex);
+
+        // Update the internship data
+        data[actualIndex] = { ...data[actualIndex], ...req.body };
+
+        // Convert back to worksheet
+        const worksheet = xlsx.utils.json_to_sheet(data);
+        workbook.Sheets[sheetName] = worksheet;
+
+        // Write back to file
+        xlsx.writeFile(workbook, filePath);
+
+        console.log('Internship updated successfully');
+        res.json({
+            success: true,
+            message: "Internship updated successfully",
+            updatedInternship: data[actualIndex]
+        });
+    } catch (error) {
+        console.error('Error updating internship:', error);
+        res.status(500).json({ 
+            error: "Error updating internship",
+            message: error.message
+        });
+    }
+});
 
 // Endpoint to upload Excel file
 router.post('/upload', (req, res) => {

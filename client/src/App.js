@@ -18,6 +18,7 @@ import ViewRecords from './components/teacher/ViewRecords';
 import UploadExcel from './components/teacher/UploadExcel';
 import NotFound from './components/layout/NotFound';
 import LandingPage from './components/landing/LandingPage';
+import InternshipManagement from './components/student/InternshipManagement';
 
 // Create theme
 const theme = createTheme({
@@ -214,6 +215,14 @@ function App() {
                 element={
                   <PrivateRoute>
                     <DocumentUpload />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/student/internship" 
+                element={
+                  <PrivateRoute>
+                    <InternshipManagement />
                   </PrivateRoute>
                 } 
               />

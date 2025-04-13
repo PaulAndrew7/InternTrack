@@ -13,6 +13,7 @@ const authRoutes = require("./routes/auth");
 const studentRoutes = require("./routes/students");
 const documentRoutes = require("./routes/documents");
 const driveRoutes = require("./routes/drive");
+const excelRoutes = require("./routes/excel");
 
 // Initialize Express
 const app = express();
@@ -38,6 +39,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/drive", driveRoutes);
+app.use("/api/excel", excelRoutes);
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === "production") {

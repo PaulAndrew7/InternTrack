@@ -69,7 +69,7 @@ const Navbar = ({ title, role }) => {
                 <>
                   <Button
                     component={Link}
-                    to="/student/details"
+                    to="/student/internship"
                     sx={{
                       color: 'text.secondary',
                       '&:hover': {

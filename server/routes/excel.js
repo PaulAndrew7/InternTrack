@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Path to the Excel file
-const filePath = path.join(__dirname, '../..', 'student_data.xlsx');
+const filePath = path.join('d:/intern_web/student_data.xlsx');
 
 // Helper function to find internship index by register number and company
 const findInternshipIndex = (data, registerNo, companyName) => {

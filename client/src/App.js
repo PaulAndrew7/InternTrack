@@ -19,6 +19,7 @@ import UploadExcel from './components/teacher/UploadExcel';
 import NotFound from './components/layout/NotFound';
 import LandingPage from './components/landing/LandingPage';
 import InternshipManagement from './components/student/InternshipManagement';
+import EditInternship from './components/student/EditInternship';
 
 // Create theme
 const theme = createTheme({
@@ -226,6 +227,14 @@ function App() {
                   </PrivateRoute>
                 } 
               />
+              <Route 
+                path="/student/internship/edit/:id" 
+                element={
+                  <PrivateRoute>
+                    <EditInternship />
+                  </PrivateRoute>
+                } 
+              />
               
               {/* Teacher Routes */}
               <Route 
@@ -255,6 +264,7 @@ function App() {
               
               {/* 404 Route */}
               <Route path="*" element={<NotFound />} />
+              
             </Routes>
           </Box>
         </Router>

@@ -1,151 +1,199 @@
-import React, { useState, useContext } from 'react';
-import { 
-  Container, Typography, Box, Paper, Grid, Button, 
-  FormControl, InputLabel, Select, MenuItem, 
-  CircularProgress, Alert
+import React, { useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Container,
+  Typography,
+  Box,
+  Paper,
+  Grid,
+  Button,
+  Alert,
+  CircularProgress,
+  Card,
+  CardContent,
+  CardActions,
+  Chip,
+  Divider
 } from '@mui/material';
 import { AuthContext } from '../../context/AuthContext';
 import Navbar from '../layout/Navbar';
 import axios from 'axios';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
+import PendingIcon from '@mui/icons-material/Pending';
 
 const DocumentUpload = () => {
   const { user } = useContext(AuthContext);
-  const [file, setFile] = useState(null);
-  const [documentType, setDocumentType] = useState('');
-  const [uploading, setUploading] = useState(false);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const [internships, setInternships] = useState([]);
+  const [uploading, setUploading] = useState(false);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+  // Document types and their keywords for verification
+  const documentTypes = {
+    'Offer Letter': ['offer', 'letter', 'appointment', 'internship'],
+    'Completion Certificate': ['completion', 'certificate', 'internship', 'completed'],
+    'Internship Report': ['internship', 'report', 'project', 'work'],
+    'Student Feedback': ['feedback', 'student', 'experience', 'internship'],
+    'Employer Feedback': ['feedback', 'employer', 'company', 'performance']
   };
 
-  const handleDocumentTypeChange = (e) => {
-    setDocumentType(e.target.value);
+  useEffect(() => {
+    fetchInternships();
+  }, []);
+
+  const fetchInternships = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:5000/api/excel/data');
+      if (response.data.success) {
+        // Filter internships for the current student
+        const studentInternships = response.data.data.filter(
+          internship => internship['Register No'] === user.username
+        );
+        setInternships(studentInternships);
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to fetch internships' });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!file || !documentType) {
-      setMessage({ type: 'error', text: 'Please select a file and document type' });
+  const handleFileUpload = async (internship, docType, event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      setMessage({ type: 'error', text: 'Please upload PDF files only' });
       return;
     }
 
-    setUploading(true);
-    setMessage(null);
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('documentType', documentType);
-    formData.append('studentId', user.username);
-
     try {
-      const res = await axios.post('/api/documents/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      setUploading(true);
+      const formData = new FormData();
+      formData.append('files', file);
+      formData.append('username', user.username);
+      formData.append('docType', docType);
+      formData.append('companyName', internship['Company Name']);
+
+      const response = await axios.post('http://localhost:5000/api/documents/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      if (res.data.success) {
-        setMessage({ type: 'success', text: 'Document uploaded successfully!' });
-        setFile(null);
-        setDocumentType('');
-        // Reset the file input
-        document.getElementById('file-upload').value = '';
-      } else {
-        setMessage({ type: 'error', text: res.data.message || 'Upload failed' });
+      if (response.data.success) {
+        // Verify the document
+        const verifyResponse = await axios.post('http://localhost:5000/api/documents/verify', {
+          fileId: response.data.uploadedFiles[0].fileId,
+          docType,
+          keywords: documentTypes[docType]
+        });
+
+        setMessage({ 
+          type: 'success', 
+          text: `Document uploaded and ${verifyResponse.data.verified ? 'verified' : 'pending verification'}`
+        });
+        fetchInternships(); // Refresh the list
       }
     } catch (error) {
-      console.error('Error uploading document:', error);
       setMessage({ 
         type: 'error', 
-        text: error.response?.data?.message || 'An error occurred during upload' 
+        text: error.response?.data?.message || 'Failed to upload document'
       });
     } finally {
       setUploading(false);
     }
   };
 
+  const getVerificationStatus = (internship, docType) => {
+    const status = internship[docType];
+    if (status === 'Yes') return { status: 'verified', icon: <CheckCircleIcon color="success" /> };
+    if (status === 'No') return { status: 'unverified', icon: <ErrorIcon color="error" /> };
+    return { status: 'pending', icon: <PendingIcon color="warning" /> };
+  };
+
   return (
     <>
       <Navbar title="Document Upload" role="student" />
-      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-        <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-          <Typography variant="h5" gutterBottom align="center">
-            Upload Internship Documents
-          </Typography>
+      <Container maxWidth="lg" sx={{ mt: 12, mb: 4 }}>
 
-          {message && (
-            <Alert 
-              severity={message.type} 
-              sx={{ mb: 2 }}
-              onClose={() => setMessage(null)}
-            >
-              {message.text}
-            </Alert>
-          )}
+        {message && (
+          <Alert 
+            severity={message.type} 
+            sx={{ mb: 2 }}
+            onClose={() => setMessage(null)}
+          >
+            {message.text}
+          </Alert>
+        )}
 
-          <Box component="form" onSubmit={handleSubmit} noValidate>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <FormControl fullWidth required>
-                  <InputLabel id="document-type-label">Document Type</InputLabel>
-                  <Select
-                    labelId="document-type-label"
-                    id="document-type"
-                    value={documentType}
-                    label="Document Type"
-                    onChange={handleDocumentTypeChange}
-                  >
-                    <MenuItem value="Offer Letter">Offer Letter</MenuItem>
-                    <MenuItem value="Completion Certificate">Completion Certificate</MenuItem>
-                    <MenuItem value="Internship Report">Internship Report</MenuItem>
-                    <MenuItem value="Student Feedback">Student Feedback</MenuItem>
-                    <MenuItem value="Employer Feedback">Employer Feedback</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              
-              <Grid item xs={12}>
-                <Box sx={{ border: '1px dashed #ccc', p: 3, borderRadius: 1 }}>
-                  <input
-                    accept="application/pdf"
-                    id="file-upload"
-                    type="file"
-                    onChange={handleFileChange}
-                    style={{ display: 'none' }}
-                  />
-                  <label htmlFor="file-upload">
-                    <Button
-                      variant="contained"
-                      component="span"
-                      fullWidth
-                    >
-                      Select PDF File
-                    </Button>
-                  </label>
-                  {file && (
-                    <Typography variant="body2" sx={{ mt: 2 }}>
-                      Selected file: {file.name}
-                    </Typography>
-                  )}
-                </Box>
-              </Grid>
-              
-              <Grid item xs={12} sx={{ mt: 2 }}>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  disabled={uploading || !file || !documentType}
-                >
-                  {uploading ? <CircularProgress size={24} /> : 'Upload Document'}
-                </Button>
-              </Grid>
-            </Grid>
+        {loading ? (
+          <Box display="flex" justifyContent="center" mt={4}>
+            <CircularProgress />
           </Box>
-        </Paper>
+        ) : (
+          <Grid container spacing={3}>
+            {internships.map((internship, index) => (
+              <Grid item xs={12} key={index}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      {internship['Company Name']}
+                    </Typography>
+                    <Typography color="textSecondary" gutterBottom>
+                      {internship['Start Date']} - {internship['End Date']}
+                    </Typography>
+                    <Divider sx={{ my: 2 }} />
+                    <Grid container spacing={2}>
+                      {Object.keys(documentTypes).map((docType) => {
+                        const verification = getVerificationStatus(internship, docType);
+                        return (
+                          <Grid item xs={12} sm={6} md={4} key={docType}>
+                            <Paper sx={{ p: 2 }}>
+                              <Box display="flex" alignItems="center" mb={1}>
+                                {verification.icon}
+                                <Typography variant="subtitle1" sx={{ ml: 1 }}>
+                                  {docType}
+                                </Typography>
+                              </Box>
+                              <Chip 
+                                label={verification.status}
+                                color={
+                                  verification.status === 'verified' ? 'success' :
+                                  verification.status === 'unverified' ? 'error' : 'warning'
+                                }
+                                size="small"
+                              />
+                              <Box mt={1}>
+                                <Button
+                                  component="label"
+                                  variant="outlined"
+                                  startIcon={<CloudUploadIcon />}
+                                  disabled={uploading}
+                                  fullWidth
+                                >
+                                  Upload
+                                  <input
+                                    type="file"
+                                    hidden
+                                    accept=".pdf"
+                                    onChange={(e) => handleFileUpload(internship, docType, e)}
+                                  />
+                                </Button>
+                              </Box>
+                            </Paper>
+                          </Grid>
+                        );
+                      })}
+                    </Grid>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Container>
     </>
   );

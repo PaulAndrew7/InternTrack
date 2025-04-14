@@ -40,13 +40,11 @@ const drive = google.drive({ version: "v3", auth });
 
 // 📌 Document classification keywords
 const documentTypes = [
-    { type: "Permission Letter", keywords: ["Permission Letter"] },
     { type: "Offer Letter", keywords: ["Offer Letter"] },
     { type: "Completion Certificate", keywords: ["Completion Certificate"] },
     { type: "Student Feedback", keywords: ["Student Feedback"] },
     { type: "Employee Feedback", keywords: ["Employee Feedback"] },
     { type: "Internship Report", keywords: ["Internship Report"] },
-    { type: "Resume", keywords: ["Resume", "Curriculum Vitae", "CV"] },
 ];
 
 // 📌 OCR: Extract text using Python

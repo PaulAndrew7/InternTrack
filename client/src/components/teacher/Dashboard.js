@@ -36,7 +36,7 @@ const TeacherDashboard = () => {
   const { user } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showWelcome, setShowWelcome] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(false);
   const [stats, setStats] = useState({
     totalStudents: 0,
     totalInternships: 0,
@@ -55,17 +55,29 @@ const TeacherDashboard = () => {
   });
 
   useEffect(() => {
-    // Show welcome screen on every login
-    setShowWelcome(true);
+    // Check localStorage to see if this is the first visit after login
+    const isFirstVisit = localStorage.getItem('teacherFirstVisit');
+    console.log('TeacherDashboard mounted, teacherFirstVisit flag value:', isFirstVisit);
+    
+    if (isFirstVisit === 'true') {
+      console.log('Showing welcome screen for teacher');
+      setShowWelcome(true);
+      
+      // Set the flag to false so it doesn't show again until next login
+      localStorage.setItem('teacherFirstVisit', 'false');
+      console.log('Set teacherFirstVisit flag to false');
+      
+      // Hide welcome screen after 3 seconds
+      const timer = setTimeout(() => {
+        setShowWelcome(false);
+        console.log('Welcome screen timer completed, hiding welcome screen');
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
-    // Hide welcome screen after 3 seconds
-    const timer = setTimeout(() => {
-      setShowWelcome(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [user]); // Re-run when user changes (login/logout)
-
+  // This effect will run when the component mounts
   useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -84,16 +96,16 @@ const TeacherDashboard = () => {
       const totalInternships = allInternships.length;
       
       const documentsSubmitted = {
-        offerLetter: allInternships.filter(item => item['Offer Letter Submitted'] === 'Yes').length,
+        offerLetter: allInternships.filter(item => item['Offer Letter'] === 'Yes').length,
         completionCertificate: allInternships.filter(item => item['Completion Certificate'] === 'Yes').length,
-        internshipReport: allInternships.filter(item => item['Internship Report Submitted'] === 'Yes').length,
-        studentFeedback: allInternships.filter(item => item['Student Feedback Submitted'] === 'Yes').length,
-        employerFeedback: allInternships.filter(item => item['Employer Feedback Submitted'] === 'Yes').length
+        internshipReport: allInternships.filter(item => item['Internship Report'] === 'Yes').length,
+        studentFeedback: allInternships.filter(item => item['Student Feedback'] === 'Yes').length,
+        employerFeedback: allInternships.filter(item => item['Employer Feedback'] === 'Yes').length
       };
       
       const internshipStatus = {
-        obtained: allInternships.filter(item => item['Obtained Internship'] === 'Yes').length,
-        notObtained: allInternships.filter(item => item['Obtained Internship'] === 'No').length
+        obtained: allInternships.filter(item => item['Obtained Internship'] === 'yes').length,
+        notObtained: allInternships.filter(item => item['Obtained Internship'] === 'no').length
       };
       
       // Get recent internships (last 5)
@@ -201,7 +213,7 @@ const TeacherDashboard = () => {
             <Box
               sx={{
                 display: 'flex',
-                justifyContent: 'space-between',
+                justifyContent: 'center',
                 alignItems: 'center',
                 maxWidth: '1200px',
                 mx: 'auto',
@@ -214,54 +226,11 @@ const TeacherDashboard = () => {
                   color: 'text.primary',
                   fontWeight: 600,
                   fontSize: '2.2rem',
+                  textAlign: 'center',
                 }}
               >
                 Welcome, {user?.username || 'Teacher'}!
               </Typography>
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <Button
-                  variant="outlined"
-                  onClick={handleViewRecords}
-                  sx={{
-                    borderColor: 'black',
-                    color: 'black',
-                    '&:hover': {
-                      borderColor: 'black',
-                      bgcolor: '#f5f5f5',
-                    },
-                  }}
-                >
-                  View Records
-                </Button>
-                <Button
-                  variant="outlined"
-                  onClick={handleUploadExcel}
-                  sx={{
-                    borderColor: 'black',
-                    color: 'black',
-                    '&:hover': {
-                      borderColor: 'black',
-                      bgcolor: '#f5f5f5',
-                    },
-                  }}
-                >
-                  Upload Excel
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleViewReports}
-                  sx={{
-                    bgcolor: 'white',
-                    color: 'black',
-                    border: '1px solid #e0e0e0',
-                    '&:hover': {
-                      bgcolor: '#f5f5f5',
-                    },
-                  }}
-                >
-                  View Reports
-                </Button>
-              </Box>
             </Box>
 
             <Box sx={{ maxWidth: '800px', mx: 'auto', width: '100%' }}>
@@ -368,7 +337,6 @@ const TeacherDashboard = () => {
             </Grid>
 
             
-
             {/* Recent Internships */}
             <Card
               sx={{
@@ -414,7 +382,7 @@ const TeacherDashboard = () => {
                         secondary={
                           <Box>
                             <Typography variant="body2" color="text.secondary">
-                              {internship['Name']} ({internship['Register No']}) - {internship['Section']}
+                              {internship['Name']} ({internship['Register No']})
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                               {internship['Start Date']} to {internship['End Date']}
@@ -423,11 +391,6 @@ const TeacherDashboard = () => {
                         }
                       />
                       <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Chip
-                          label={internship['Obtained Internship']}
-                          color={getStatusColor(internship['Obtained Internship'])}
-                          size="small"
-                        />
                         <Chip
                           label={internship['Internship Type']}
                           variant="outlined"

@@ -63,6 +63,13 @@ export const AuthProvider = ({ children }) => {
       if (res.data.success) {
         localStorage.setItem('user', JSON.stringify(res.data.user));
         localStorage.setItem('token', res.data.token);
+        
+        // If user is a teacher, set the welcome screen flag
+        if (res.data.user.role === 'teacher') {
+          console.log('Teacher logged in, setting welcome flag');
+          localStorage.setItem('teacherFirstVisit', 'true');
+        }
+        
         setUser(res.data.user);
         setIsAuthenticated(true);
         setError(null);
@@ -84,6 +91,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('welcomeShown');
+    localStorage.removeItem('teacherFirstVisit');
     setUser(null);
     setIsAuthenticated(false);
   };

@@ -98,19 +98,6 @@ const Navbar = ({ title, role }) => {
               {role === 'teacher' && (
                 <>
                   <Button
-                    component={Link}
-                    to="/teacher/students"
-                    sx={{
-                      color: 'text.secondary',
-                      '&:hover': {
-                        color: 'text.primary',
-                        background: 'rgba(255, 255, 255, 0.05)',
-                      },
-                    }}
-                  >
-                    Students
-                  </Button>
-                  <Button
                     color="inherit"
                     component={Link}
                     to="/teacher/reports"

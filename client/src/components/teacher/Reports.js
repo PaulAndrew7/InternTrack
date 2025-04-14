@@ -271,21 +271,6 @@
                 startIcon={<FilterListIcon />}
                 onClick={() => setShowFilters(!showFilters)}
                 sx={{
-                  borderColor: 'black',
-                  color: 'black',
-                  '&:hover': {
-                    borderColor: 'black',
-                    bgcolor: '#f5f5f5',
-                  },
-                }}
-              >
-                {showFilters ? 'Hide Filters' : 'Show Filters'}
-              </Button>
-              <Button
-                variant="contained"
-                startIcon={<FileDownloadIcon />}
-                onClick={exportToExcel}
-                sx={{
                   bgcolor: 'white',
                   color: 'black',
                   border: '1px solid #e0e0e0',
@@ -294,8 +279,9 @@
                   },
                 }}
               >
-                Export to Excel
+                {showFilters ? 'Hide Filters' : 'Show Filters'}
               </Button>
+              
             </Box>
           </Box>
 
@@ -418,11 +404,10 @@
                       variant="contained"
                       onClick={applyFilters}
                       sx={{
-                        bgcolor: 'white',
-                        color: 'black',
-                        border: '1px solid #e0e0e0',
+                        bgcolor: 'black',
+                        color: 'white',
                         '&:hover': {
-                          bgcolor: '#f5f5f5',
+                          bgcolor: 'rgba(0, 0, 0, 0.8)',
                         },
                       }}
                     >

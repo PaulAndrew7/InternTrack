@@ -16,6 +16,20 @@ const Dashboard = () => {
     return !localStorage.getItem('welcomeShown');
   });
 
+  // Animation variants
+  const fadeUpVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 1,
+        delay: 0.1 + i * 0.1,
+        ease: [0.25, 0.4, 0.25, 1],
+      },
+    }),
+  };
+
   useEffect(() => {
     if (showWelcome) {
       // Set the flag in localStorage and hide welcome screen after 3 seconds
@@ -71,22 +85,36 @@ const Dashboard = () => {
               mt: '64px' // Add margin top to account for fixed navbar
             }}
           >
-            <Typography 
-              variant="h4" 
-              sx={{ 
-                color: 'text.primary',
-                fontWeight: 600,
-                textAlign: 'center',
-                fontSize: '2.2rem',
-                mb: 1
-              }}
+            <motion.div
+              custom={0}
+              variants={fadeUpVariants}
+              initial="hidden"
+              animate="visible"
             >
-              Welcome, {user?.username || user?.name || 'User'}!
-            </Typography>
+              <Typography 
+                variant="h4" 
+                sx={{ 
+                  color: 'text.primary',
+                  fontWeight: 600,
+                  textAlign: 'center',
+                  fontSize: '2.2rem',
+                  mb: 1
+                }}
+              >
+                Welcome, {user?.username || user?.name || 'User'}!
+              </Typography>
+            </motion.div>
 
-            <Box sx={{ maxWidth: '800px', mx: 'auto', width: '100%' }}>
-              <QuoteGenerator />
-            </Box>
+            <motion.div
+              custom={1}
+              variants={fadeUpVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <Box sx={{ maxWidth: '800px', mx: 'auto', width: '100%' }}>
+                <QuoteGenerator />
+              </Box>
+            </motion.div>
 
             <Box
               sx={{
@@ -95,44 +123,58 @@ const Dashboard = () => {
                 gap: 4,
               }}
             >
-              <Box>
-                <Typography 
-                  variant="h5" 
-                  sx={{ 
-                    color: 'text.primary',
-                    fontWeight: 500,
-                    mb: 2
-                  }}
-                >
-                  Document Status
-                </Typography>
-                <Paper 
-                  elevation={0}
-                  sx={{ 
-                    p: 3, 
-                    borderRadius: 3,
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)'
-                  }}
-                >
-                  <DocumentStatusFetcher />
-                </Paper>
-              </Box>
+              <motion.div
+                custom={2}
+                variants={fadeUpVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                <Box>
+                  <Typography 
+                    variant="h5" 
+                    sx={{ 
+                      color: 'text.primary',
+                      fontWeight: 500,
+                      mb: 2
+                    }}
+                  >
+                    Document Status
+                  </Typography>
+                  <Paper 
+                    elevation={0}
+                    sx={{ 
+                      p: 3, 
+                      borderRadius: 3,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)'
+                    }}
+                  >
+                    <DocumentStatusFetcher />
+                  </Paper>
+                </Box>
+              </motion.div>
               
-              <Box>
-                <Typography 
-                  variant="h5" 
-                  sx={{ 
-                    color: 'text.primary',
-                    fontWeight: 500,
-                    mb: 2
-                  }}
-                >
-                  Internship Offers
-                </Typography>
-                <InternshipOffers offers={mockOffers} />
-              </Box>
+              <motion.div
+                custom={3}
+                variants={fadeUpVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                <Box>
+                  <Typography 
+                    variant="h5" 
+                    sx={{ 
+                      color: 'text.primary',
+                      fontWeight: 500,
+                      mb: 2
+                    }}
+                  >
+                    Internship Offers
+                  </Typography>
+                  <InternshipOffers offers={mockOffers} />
+                </Box>
+              </motion.div>
             </Box>
           </Box>
         </motion.div>

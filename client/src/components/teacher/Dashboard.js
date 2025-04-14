@@ -54,6 +54,20 @@ const TeacherDashboard = () => {
     recentInternships: []
   });
 
+  // Animation variants
+  const fadeUpVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 1,
+        delay: 0.1 + i * 0.1,
+        ease: [0.25, 0.4, 0.25, 1],
+      },
+    }),
+  };
+
   useEffect(() => {
     // Check localStorage to see if this is the first visit after login
     const isFirstVisit = localStorage.getItem('teacherFirstVisit');
@@ -206,199 +220,246 @@ const TeacherDashboard = () => {
               mt: '64px', // Add margin top to account for fixed navbar
             }}
           >
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                maxWidth: '1200px',
-                mx: 'auto',
-                width: '100%',
-              }}
+            <motion.div
+              custom={0}
+              variants={fadeUpVariants}
+              initial="hidden"
+              animate="visible"
             >
-              <Typography
-                variant="h4"
+              <Box
                 sx={{
-                  color: 'text.primary',
-                  fontWeight: 600,
-                  fontSize: '2.2rem',
-                  textAlign: 'center',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  maxWidth: '1200px',
+                  mx: 'auto',
+                  width: '100%',
                 }}
               >
-                Welcome, {user?.username || 'Teacher'}!
-              </Typography>
-            </Box>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    color: 'text.primary',
+                    fontWeight: 600,
+                    fontSize: '2.2rem',
+                    textAlign: 'center',
+                  }}
+                >
+                  Welcome, {user?.username || 'Teacher'}!
+                </Typography>
+              </Box>
+            </motion.div>
 
-            <Box sx={{ maxWidth: '800px', mx: 'auto', width: '100%' }}>
-              <QuoteGenerator />
-            </Box>
+            <motion.div
+              custom={1}
+              variants={fadeUpVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <Box sx={{ maxWidth: '800px', mx: 'auto', width: '100%' }}>
+                <QuoteGenerator />
+              </Box>
+            </motion.div>
 
             {/* Statistics Cards */}
             <Grid container spacing={3} sx={{ maxWidth: '1200px', mx: 'auto', width: '100%' }}>
               <Grid item xs={12} sm={6} md={4}>
-                <Card
-                  sx={{
-                    bgcolor: 'background.paper',
-                    borderRadius: 2,
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
-                    },
-                  }}
+                <motion.div
+                  custom={2}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
                 >
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <PeopleIcon sx={{ fontSize: 40, color: 'text.secondary', mr: 2 }} />
-                      <Typography variant="h5" sx={{ color: 'text.primary', fontWeight: 600 }}>
-                        Students
+                  <Card
+                    sx={{
+                      bgcolor: 'background.paper',
+                      borderRadius: 2,
+                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                      transition: 'transform 0.2s, box-shadow 0.2s',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
+                      },
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <PeopleIcon sx={{ fontSize: 40, color: 'text.secondary', mr: 2 }} />
+                        <Typography variant="h5" sx={{ color: 'text.primary', fontWeight: 600 }}>
+                          Students
+                        </Typography>
+                      </Box>
+                      <Typography variant="h3" sx={{ color: 'text.primary', fontWeight: 700, mb: 1 }}>
+                        {stats.totalStudents}
                       </Typography>
-                    </Box>
-                    <Typography variant="h3" sx={{ color: 'text.primary', fontWeight: 700, mb: 1 }}>
-                      {stats.totalStudents}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Total registered students
-                    </Typography>
-                  </CardContent>
-                </Card>
+                      <Typography variant="body2" color="text.secondary">
+                        Total registered students
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               </Grid>
 
               <Grid item xs={12} sm={6} md={4}>
-                <Card
-                  sx={{
-                    bgcolor: 'background.paper',
-                    borderRadius: 2,
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
-                    },
-                  }}
+                <motion.div
+                  custom={3}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
                 >
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <WorkIcon sx={{ fontSize: 40, color: 'text.secondary', mr: 2 }} />
-                      <Typography variant="h5" sx={{ color: 'text.primary', fontWeight: 600 }}>
-                        Internships
+                  <Card
+                    sx={{
+                      bgcolor: 'background.paper',
+                      borderRadius: 2,
+                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                      transition: 'transform 0.2s, box-shadow 0.2s',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
+                      },
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <WorkIcon sx={{ fontSize: 40, color: 'text.secondary', mr: 2 }} />
+                        <Typography variant="h5" sx={{ color: 'text.primary', fontWeight: 600 }}>
+                          Internships
+                        </Typography>
+                      </Box>
+                      <Typography variant="h3" sx={{ color: 'text.primary', fontWeight: 700, mb: 1 }}>
+                        {stats.totalInternships}
                       </Typography>
-                    </Box>
-                    <Typography variant="h3" sx={{ color: 'text.primary', fontWeight: 700, mb: 1 }}>
-                      {stats.totalInternships}
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        {stats.internshipStatus.obtained} obtained
-                      </Typography>
-                      <Divider orientation="vertical" flexItem />
-                      <Typography variant="body2" color="text.secondary">
-                        {stats.internshipStatus.notObtained} pending
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Total internships obtained by students
+                        </Typography>
+
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               </Grid>
 
               <Grid item xs={12} sm={6} md={4}>
-                <Card
-                  sx={{
-                    bgcolor: 'background.paper',
-                    borderRadius: 2,
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
-                    },
-                  }}
+                <motion.div
+                  custom={4}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
                 >
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <DescriptionIcon sx={{ fontSize: 40, color: 'text.secondary', mr: 2 }} />
-                      <Typography variant="h5" sx={{ color: 'text.primary', fontWeight: 600 }}>
-                        Documents
+                  <Card
+                    sx={{
+                      bgcolor: 'background.paper',
+                      borderRadius: 2,
+                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                      transition: 'transform 0.2s, box-shadow 0.2s',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
+                      },
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <DescriptionIcon sx={{ fontSize: 40, color: 'text.secondary', mr: 2 }} />
+                        <Typography variant="h5" sx={{ color: 'text.primary', fontWeight: 600 }}>
+                          Documents
+                        </Typography>
+                      </Box>
+                      <Typography variant="h3" sx={{ color: 'text.primary', fontWeight: 700, mb: 1 }}>
+                        {Object.values(stats.documentsSubmitted).reduce((a, b) => a + b, 0)}
                       </Typography>
-                    </Box>
-                    <Typography variant="h3" sx={{ color: 'text.primary', fontWeight: 700, mb: 1 }}>
-                      {Object.values(stats.documentsSubmitted).reduce((a, b) => a + b, 0)}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Total documents submitted
-                    </Typography>
-                  </CardContent>
-                </Card>
+                      <Typography variant="body2" color="text.secondary">
+                        Total documents submitted
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               </Grid>
             </Grid>
 
             
             {/* Recent Internships */}
-            <Card
-              sx={{
-                bgcolor: 'background.paper',
-                borderRadius: 2,
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
-                },
-                p: 3,
-                maxWidth: '1200px',
-                mx: 'auto',
-                width: '100%',
-              }}
+            <motion.div
+              custom={5}
+              variants={fadeUpVariants}
+              initial="hidden"
+              animate="visible"
             >
-              <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', fontWeight: 600 }}>
-                Recent Internships
-              </Typography>
-              <List>
-                {stats.recentInternships.map((internship, index) => (
-                  <React.Fragment key={index}>
-                    <ListItem
-                      sx={{
-                        py: 2,
-                        borderRadius: 1,
-                        transition: 'background-color 0.2s',
-                        '&:hover': {
-                          bgcolor: 'rgba(0, 0, 0, 0.04)',
-                        },
-                      }}
+              <Card
+                sx={{
+                  bgcolor: 'background.paper',
+                  borderRadius: 2,
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
+                  },
+                  p: 3,
+                  maxWidth: '1200px',
+                  mx: 'auto',
+                  width: '100%',
+                }}
+              >
+                <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', fontWeight: 600 }}>
+                  Recent Internships
+                </Typography>
+                <List>
+                  {stats.recentInternships.map((internship, index) => (
+                    <motion.div
+                      key={index}
+                      custom={6 + index}
+                      variants={fadeUpVariants}
+                      initial="hidden"
+                      animate="visible"
                     >
-                      <ListItemIcon>
-                        <WorkIcon color="action" />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={
-                          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                            {internship['Company Name']}
-                          </Typography>
-                        }
-                        secondary={
-                          <Box>
-                            <Typography variant="body2" color="text.secondary">
-                              {internship['Name']} ({internship['Register No']})
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {internship['Start Date']} to {internship['End Date']}
-                            </Typography>
+                      <React.Fragment>
+                        <ListItem
+                          sx={{
+                            py: 2,
+                            borderRadius: 1,
+                            transition: 'background-color 0.2s',
+                            '&:hover': {
+                              bgcolor: 'rgba(0, 0, 0, 0.04)',
+                            },
+                          }}
+                        >
+                          <ListItemIcon>
+                            <WorkIcon color="action" />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={
+                              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                                {internship['Company Name']}
+                              </Typography>
+                            }
+                            secondary={
+                              <Box>
+                                <Typography variant="body2" color="text.secondary">
+                                  {internship['Name']} ({internship['Register No']})
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                  {internship['Start Date']} to {internship['End Date']}
+                                </Typography>
+                              </Box>
+                            }
+                          />
+                          <Box sx={{ display: 'flex', gap: 1 }}>
+                            <Chip
+                              label={internship['Internship Type']}
+                              variant="outlined"
+                              size="small"
+                            />
                           </Box>
-                        }
-                      />
-                      <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Chip
-                          label={internship['Internship Type']}
-                          variant="outlined"
-                          size="small"
-                        />
-                      </Box>
-                    </ListItem>
-                    {index < stats.recentInternships.length - 1 && <Divider />}
-                  </React.Fragment>
-                ))}
-              </List>
-            </Card>
+                        </ListItem>
+                        {index < stats.recentInternships.length - 1 && <Divider />}
+                      </React.Fragment>
+                    </motion.div>
+                  ))}
+                </List>
+              </Card>
+            </motion.div>
           </Box>
         </motion.div>
       )}

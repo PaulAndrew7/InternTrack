@@ -66,14 +66,6 @@ const TeacherDashboard = () => {
       // Set the flag to false so it doesn't show again until next login
       localStorage.setItem('teacherFirstVisit', 'false');
       console.log('Set teacherFirstVisit flag to false');
-      
-      // Hide welcome screen after 3 seconds
-      const timer = setTimeout(() => {
-        setShowWelcome(false);
-        console.log('Welcome screen timer completed, hiding welcome screen');
-      }, 3000);
-      
-      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -147,7 +139,15 @@ const TeacherDashboard = () => {
     return 'default';
   };
 
-  if (loading) {
+  const handleWelcomeComplete = () => {
+    // Function to hide welcome screen after animation completes
+    setTimeout(() => {
+      setShowWelcome(false);
+      console.log('Welcome screen animation completed, hiding welcome screen');
+    }, 500);
+  };
+
+  if (loading && !showWelcome) {
     return (
       <Box
         sx={{
@@ -163,7 +163,7 @@ const TeacherDashboard = () => {
     );
   }
 
-  if (error) {
+  if (error && !showWelcome) {
     return (
       <Box
         sx={{
@@ -182,15 +182,11 @@ const TeacherDashboard = () => {
   return (
     <AnimatePresence mode="wait">
       {showWelcome ? (
-        <motion.div
+        <WelcomeScreen 
           key="welcome"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <WelcomeScreen username={user?.username || 'Teacher'} />
-        </motion.div>
+          username={user?.username || 'Teacher'} 
+          onAnimationComplete={handleWelcomeComplete}
+        />
       ) : (
         <motion.div
           key="dashboard"

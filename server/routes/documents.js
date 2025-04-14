@@ -173,7 +173,7 @@ const downloadFile = async (fileId) => {
 // Helper function to extract text from PDF
 const extractTextFromPDF = (pdfPath) => {
   return new Promise((resolve, reject) => {
-    const pythonProcess = spawn('python', ['extract_text.py', pdfPath]);
+    const pythonProcess = spawn('python', ['d:/intern_web/server/scripts/extract_text.py', pdfPath]);
     let output = '';
     let error = '';
 

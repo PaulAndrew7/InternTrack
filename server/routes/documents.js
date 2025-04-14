@@ -107,9 +107,9 @@ router.post('/upload', [upload.array('files')], async (req, res) => {
         console.error(`Text extraction failed for ${file.originalname}:`, err);
       }
 
-      let docType = classifyDocumentType(extractedText);
+      let docType = req.body.docType;
       let extension = path.extname(file.originalname);
-      let renamedFile = `${regSuffix}-${docType}${extension}`;
+      let renamedFile = `${regSuffix}-${req.body.companyName}-${docType}${extension}`;
 
       const fileMetadata = {
         name: renamedFile,
@@ -231,7 +231,7 @@ const verifyDocument = (text, keywords) => {
     return found;
   });
 
-  const verified = results.some((result) => result);
+  const verified = results.every((result) => result);
   console.log('Verification result:', verified);
 
   return verified;
@@ -288,7 +288,7 @@ router.post('/verify', async (req, res) => {
     }
 
     if (!verified) {
-      const newFileName = `${req.body.username.slice(-4)}-Unknown Document.pdf`;
+      const newFileName = `Unknown Document.pdf`;
 
       await drive.files.update({
         fileId: fileId,

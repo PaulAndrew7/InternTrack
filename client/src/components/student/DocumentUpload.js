@@ -34,10 +34,10 @@ const DocumentUpload = () => {
   // Document types and their keywords for verification
   const documentTypes = {
     'Offer Letter': ['offer letter', 'offer', 'letter'],
-    'Completion Certificate': ['completion', 'certificate', 'internship', 'completed'],
-    'Internship Report': ['internship', 'report', 'project', 'work'],
-    'Student Feedback': ['feedback', 'student', 'experience', 'internship'],
-    'Employer Feedback': ['feedback', 'employer', 'company', 'performance']
+    'Completion Certificate': ['completion', 'certificate', 'completion certificate', 'completed'],
+    'Internship Report': ['internship', 'report', 'internship report'],
+    'Student Feedback': ['feedback', 'student', 'student feedback', 'experience'],
+    'Employer Feedback': ['feedback', 'employer', 'employer feedback', 'performance']
   };
 
   useEffect(() => {

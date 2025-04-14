@@ -1,13 +1,13 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Paper, Grid } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContext } from '../../context/AuthContext';
 import Navbar from '../layout/Navbar';
 import QuoteGenerator from './QuoteGenerator';
-import DocumentStatus from './DocumentStatus';
+import DocumentStatusFetcher from './DocumentStatusFetcher';
 import InternshipOffers from './InternshipOffers';
 import WelcomeScreen from './WelcomeScreen';
-import { mockDocuments, mockOffers } from '../../data/mockData';
+import { mockOffers } from '../../data/mockData';
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
@@ -99,28 +99,37 @@ const Dashboard = () => {
                 <Typography 
                   variant="h5" 
                   sx={{ 
-                    color: 'text.secondary',
-                    mb: 3,
-                    fontSize: '1.25rem',
+                    color: 'text.primary',
                     fontWeight: 500,
+                    mb: 2
                   }}
                 >
                   Document Status
                 </Typography>
-                <DocumentStatus documents={mockDocuments} />
+                <Paper 
+                  elevation={0}
+                  sx={{ 
+                    p: 3, 
+                    borderRadius: 3,
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                  }}
+                >
+                  <DocumentStatusFetcher />
+                </Paper>
               </Box>
-
+              
               <Box>
                 <Typography 
                   variant="h5" 
                   sx={{ 
-                    color: 'text.secondary',
-                    mb: 3,
-                    fontSize: '1.25rem',
+                    color: 'text.primary',
                     fontWeight: 500,
+                    mb: 2
                   }}
                 >
-                  Internship Opportunities
+                  Internship Offers
                 </Typography>
                 <InternshipOffers offers={mockOffers} />
               </Box>

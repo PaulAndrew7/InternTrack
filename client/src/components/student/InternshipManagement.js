@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import Navbar from '../layout/Navbar';
 import { AuthContext } from '../../context/AuthContext';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const InternshipManagement = () => {
   const { user } = useContext(AuthContext);
@@ -126,10 +127,11 @@ const InternshipManagement = () => {
             variant="contained"
             onClick={handleAddInternship}
             sx={{
-              bgcolor: 'primary.main',
-              color: 'white',
+              bgcolor: 'white',
+              color: 'black',
+              border: '1px solid #e0e0e0',
               '&:hover': {
-                bgcolor: 'primary.dark',
+                bgcolor: '#f5f5f5',
               },
               textTransform: 'none',
               px: 3,
@@ -194,14 +196,19 @@ const InternshipManagement = () => {
                           {internship['Company Name']}
                         </Typography>
                         <Typography
-                          variant="subtitle1"
-                          sx={{
-                            color: 'text.secondary',
-                            mb: 2,
-                          }}
-                        >
-                          {internship['Location']}
-                        </Typography>
+  variant="subtitle1"
+  sx={{
+    color: 'text.secondary',
+    mb: 2,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1, // adds a little spacing between the icon and text
+  }}
+>
+  <LocationOnIcon fontSize="small" />
+  {internship['Location']}
+</Typography>
+
                         <Box
                           sx={{
                             display: 'flex',
@@ -225,12 +232,12 @@ const InternshipManagement = () => {
                         variant="outlined"
                         onClick={() => handleEditInternship(index)}
                         sx={{
-                          borderColor: 'primary.main',
-                          color: 'primary.main',
+                          borderColor: 'black',
+                          color: 'black',
+                          bgcolor: 'white',
                           '&:hover': {
-                            borderColor: 'primary.dark',
-                            bgcolor: 'primary.light',
-                            color: 'primary.dark',
+                            borderColor: 'black',
+                            bgcolor: '#f5f5f5',
                           },
                           textTransform: 'none',
                         }}

@@ -85,9 +85,17 @@ const AddInternship = () => {
   return (
     <>
       <Navbar title="Add Internship" role="student" />
-      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-        <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-          <Typography variant="h5" gutterBottom align="center">
+      <Container maxWidth="md" sx={{ mt: 12, mb: 4 }}>
+        <Paper 
+          elevation={0} 
+          sx={{ 
+            p: 4, 
+            borderRadius: 2,
+            bgcolor: 'background.default',
+            border: '1px solid #e0e0e0'
+          }}
+        >
+          <Typography variant="h5" gutterBottom align="center" sx={{ color: 'text.primary', fontWeight: 600 }}>
             Add New Internship
           </Typography>
 
@@ -105,7 +113,7 @@ const AddInternship = () => {
             <Grid container spacing={3}>
               {/* Personal Information */}
               <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', fontWeight: 600 }}>
                   Personal Information
                 </Typography>
               </Grid>
@@ -159,7 +167,7 @@ const AddInternship = () => {
 
               {/* Internship Information */}
               <Grid item xs={12} sx={{ mt: 2 }}>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', fontWeight: 600 }}>
                   Internship Information
                 </Typography>
               </Grid>
@@ -275,104 +283,24 @@ const AddInternship = () => {
                 />
               </Grid>
 
-              {/* Document Status */}
-              <Grid item xs={12} sx={{ mt: 2 }}>
-                <Typography variant="h6" gutterBottom>
-                  Document Submission Status
-                </Typography>
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="offer-label">Offer Letter Submitted</InputLabel>
-                  <Select
-                    labelId="offer-label"
-                    id="Offer Letter Submitted"
-                    name="Offer Letter Submitted"
-                    value={formData['Offer Letter Submitted']}
-                    label="Offer Letter Submitted"
-                    onChange={handleChange}
-                  >
-                    <MenuItem value="Yes">Yes</MenuItem>
-                    <MenuItem value="No">No</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="completion-label">Completion Certificate</InputLabel>
-                  <Select
-                    labelId="completion-label"
-                    id="Completion Certificate"
-                    name="Completion Certificate"
-                    value={formData['Completion Certificate']}
-                    label="Completion Certificate"
-                    onChange={handleChange}
-                  >
-                    <MenuItem value="Yes">Yes</MenuItem>
-                    <MenuItem value="No">No</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="report-label">Internship Report</InputLabel>
-                  <Select
-                    labelId="report-label"
-                    id="Internship Report Submitted"
-                    name="Internship Report Submitted"
-                    value={formData['Internship Report Submitted']}
-                    label="Internship Report Submitted"
-                    onChange={handleChange}
-                  >
-                    <MenuItem value="Yes">Yes</MenuItem>
-                    <MenuItem value="No">No</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="feedback-label">Student Feedback</InputLabel>
-                  <Select
-                    labelId="feedback-label"
-                    id="Student Feedback Submitted"
-                    name="Student Feedback Submitted"
-                    value={formData['Student Feedback Submitted']}
-                    label="Student Feedback Submitted"
-                    onChange={handleChange}
-                  >
-                    <MenuItem value="Yes">Yes</MenuItem>
-                    <MenuItem value="No">No</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="emp-feedback-label">Employer Feedback</InputLabel>
-                  <Select
-                    labelId="emp-feedback-label"
-                    id="Employer Feedback Submitted"
-                    name="Employer Feedback Submitted"
-                    value={formData['Employer Feedback Submitted']}
-                    label="Employer Feedback Submitted"
-                    onChange={handleChange}
-                  >
-                    <MenuItem value="Yes">Yes</MenuItem>
-                    <MenuItem value="No">No</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              
               <Grid item xs={12} sx={{ mt: 3 }}>
                 <Button
                   type="submit"
                   fullWidth
                   variant="contained"
                   disabled={submitting}
+                  sx={{
+                    bgcolor: 'white',
+                    color: 'black',
+                    border: '1px solid #e0e0e0',
+                    '&:hover': {
+                      bgcolor: '#f5f5f5',
+                    },
+                    '&:disabled': {
+                      bgcolor: '#f5f5f5',
+                      color: '#9e9e9e',
+                    },
+                  }}
                 >
                   {submitting ? <CircularProgress size={24} /> : 'Add Internship'}
                 </Button>

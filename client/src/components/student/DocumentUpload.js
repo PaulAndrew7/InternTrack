@@ -33,7 +33,7 @@ const DocumentUpload = () => {
 
   // Document types and their keywords for verification
   const documentTypes = {
-    'Offer Letter': ['offer', 'letter', 'appointment', 'internship'],
+    'Offer Letter': ['offer letter', 'offer', 'letter'],
     'Completion Certificate': ['completion', 'certificate', 'internship', 'completed'],
     'Internship Report': ['internship', 'report', 'project', 'work'],
     'Student Feedback': ['feedback', 'student', 'experience', 'internship'],
@@ -88,7 +88,9 @@ const DocumentUpload = () => {
         const verifyResponse = await axios.post('http://localhost:5000/api/documents/verify', {
           fileId: response.data.uploadedFiles[0].fileId,
           docType,
-          keywords: documentTypes[docType]
+          keywords: [...documentTypes[docType], internship['Company Name']],
+          username: user.username,
+          companyName: internship['Company Name']
         });
 
         setMessage({ 

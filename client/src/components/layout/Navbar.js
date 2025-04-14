@@ -111,15 +111,10 @@ const Navbar = ({ title, role }) => {
                     Students
                   </Button>
                   <Button
+                    color="inherit"
                     component={Link}
                     to="/teacher/reports"
-                    sx={{
-                      color: 'text.secondary',
-                      '&:hover': {
-                        color: 'text.primary',
-                        background: 'rgba(255, 255, 255, 0.05)',
-                      },
-                    }}
+                    sx={{ textTransform: 'none' }}
                   >
                     Reports
                   </Button>

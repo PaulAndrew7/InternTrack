@@ -21,6 +21,7 @@ import LandingPage from './components/landing/LandingPage';
 import InternshipManagement from './components/student/InternshipManagement';
 import EditInternship from './components/student/EditInternship';
 import AddInternship from './components/student/AddInternship';
+import Reports from './components/teacher/Reports';
 
 // Create theme
 const theme = createTheme({
@@ -267,6 +268,14 @@ function App() {
                 element={
                   <TeacherRoute>
                     <UploadExcel />
+                  </TeacherRoute>
+                } 
+              />
+              <Route 
+                path="/teacher/reports" 
+                element={
+                  <TeacherRoute>
+                    <Reports />
                   </TeacherRoute>
                 } 
               />

@@ -73,15 +73,20 @@ router.post("/register", async (req, res) => {
     }
     console.log("Google Drive folder created with ID:", folderId);
 
-    // Create user with plain text password
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    console.log("Password hashed successfully");
+
+    // Create user with hashed password
     console.log("Creating new user in MongoDB");
     const newUser = new User({ 
       username, 
-      password, // Store plain text password
+      password: hashedPassword, // Store hashed password
       role, 
       folderId 
     });
-    console.log("User object to save:", newUser);
+    console.log("User object to save:", { ...newUser._doc, password: "[HIDDEN]" });
     
     try {
       await newUser.save();
@@ -127,18 +132,11 @@ router.post("/login", async (req, res) => {
       console.log("Username:", user.username);
       console.log("Stored password type:", typeof user.password);
       console.log("Stored password length:", user.password.length);
-      console.log("Provided password type:", typeof password);
-      console.log("Provided password length:", password.length);
       
-      // Trim and normalize both passwords
-      const storedPassword = String(user.password).trim();
-      const providedPassword = String(password).trim();
+      // Compare password with hashed password in database
+      const isMatch = await bcrypt.compare(password, user.password);
       
-      console.log("Normalized stored password:", storedPassword);
-      console.log("Normalized provided password:", providedPassword);
-      
-      // Compare normalized passwords
-      if (storedPassword === providedPassword) {
+      if (isMatch) {
         console.log("=== Login Success ===");
         res.json({ 
           success: true, 

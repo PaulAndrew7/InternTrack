@@ -97,7 +97,7 @@ const InternshipOffers = ({ offers }) => {
                     color: 'text.primary',
                   }
                 }}
-                onClick={() => {/* Handle click event */}}
+                onClick={() => {/* temp */}}
               >
                 View Details
               </Typography>

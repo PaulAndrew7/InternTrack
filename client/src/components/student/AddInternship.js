@@ -39,11 +39,11 @@ const AddInternship = () => {
     'Stipend (Rs.)': '',
     'Internship Type': '',
     'Location': '',
-    'Offer Letter': 'No',
-    'Completion Certificate': 'No',
-    'Internship Report': 'No',
-    'Student Feedback': 'No',
-    'Employer Feedback': 'No'
+    'Offer Letter': '',
+    'Completion Certificate': '',
+    'Internship Report': '',
+    'Student Feedback': '',
+    'Employer Feedback': ''
   });
 
   // Animation variants
@@ -68,10 +68,83 @@ const AddInternship = () => {
     }));
   };
 
+  const validateForm = () => {
+    const errors = [];
+
+    // Register No validation (should be 13 alphanumeric characters)
+    const regNoPattern = /^[A-Za-z0-9]{13}$/;
+    if (!regNoPattern.test(formData['Register No'])) {
+      errors.push('Register No must be exactly 13 alphanumeric characters.');
+    }
+
+    // Name validation (only letters and spaces)
+    const namePattern = /^[A-Za-z\s]+$/;
+    if (!namePattern.test(formData['Name'])) {
+      errors.push('Name must contain only letters and spaces.');
+    }
+
+    // Mobile number validation (10 digits)
+    const mobilePattern = /^[0-9]{10}$/;
+    if (formData['Mobile No'] && !mobilePattern.test(formData['Mobile No'])) {
+      errors.push('Mobile number must be exactly 10 digits.');
+    }
+
+    // Section validation (1-2 uppercase letters)
+    const sectionPattern = /^[A-Z]{1,2}$/;
+    if (formData['Section'] && !sectionPattern.test(formData['Section'])) {
+      errors.push('Section must be 1 or 2 uppercase letters.');
+    }
+
+    // Period validation (if internship is obtained)
+    if (formData['Obtained Internship'] === 'Yes') {
+      const periodPattern = /^[0-9]+ (days|weeks|months|years)$/i;
+      if (!periodPattern.test(formData['Period'])) {
+        errors.push('Period format should be like "2 months".');
+      }
+
+      // Company name validation
+      if (!formData['Company Name'].trim()) {
+        errors.push('Company Name is required if you have obtained an internship.');
+      }
+
+      // Date validation
+      if (!formData['Start Date']) {
+        errors.push('Start Date is required.');
+      }
+      if (!formData['End Date']) {
+        errors.push('End Date is required.');
+      }
+      if (formData['Start Date'] && formData['End Date']) {
+        const startDate = new Date(formData['Start Date']);
+        const endDate = new Date(formData['End Date']);
+        if (startDate >= endDate) {
+          errors.push('End date must be after start date.');
+        }
+      }
+
+      // Stipend validation
+      if (formData['Stipend (Rs.)'] && parseFloat(formData['Stipend (Rs.)']) < 0) {
+        errors.push('Stipend cannot be negative.');
+      }
+    }
+
+    return errors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     setMessage(null);
+
+    const validationErrors = validateForm();
+    if (validationErrors.length > 0) {
+      setMessage({ 
+        type: 'error', 
+        text: validationErrors.join('\n')
+      });
+      setSubmitting(false);
+      return;
+    }
 
     try {
       console.log('Sending add request with data:', formData);
@@ -425,10 +498,14 @@ const AddInternship = () => {
               >
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
                   <Button 
-                    type="button" 
-                    variant="outlined" 
+                    type="button"  
                     onClick={() => navigate('/student/internship')}
-                    sx={{ mr: 2 }}
+                    sx={{ 
+                      bgcolor: 'black',
+                      color: 'white',
+                      margin: '5px',
+                      border: '1px solid #e0e0e0',
+                    }}
                   >
                     Cancel
                   </Button>

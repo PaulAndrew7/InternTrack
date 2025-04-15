@@ -18,6 +18,7 @@ import {
 import { AuthContext } from '../../context/AuthContext';
 import Navbar from '../layout/Navbar';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 
 
 const EditInternship = () => {
@@ -94,10 +95,83 @@ const EditInternship = () => {
     }));
   };
 
+  const validateForm = () => {
+    const errors = [];
+
+    // Register No validation (should be 13 alphanumeric characters)
+    const regNoPattern = /^[A-Za-z0-9]{13}$/;
+    if (!regNoPattern.test(formData['Register No'])) {
+      errors.push('Register No must be exactly 13 alphanumeric characters.');
+    }
+
+    // Name validation (only letters and spaces)
+    const namePattern = /^[A-Za-z\s]+$/;
+    if (!namePattern.test(formData['Name'])) {
+      errors.push('Name must contain only letters and spaces.');
+    }
+
+    // Mobile number validation (10 digits)
+    const mobilePattern = /^[0-9]{10}$/;
+    if (formData['Mobile No'] && !mobilePattern.test(formData['Mobile No'])) {
+      errors.push('Mobile number must be exactly 10 digits.');
+    }
+
+    // Section validation (1-2 uppercase letters)
+    const sectionPattern = /^[A-Z]{1,2}$/;
+    if (formData['Section'] && !sectionPattern.test(formData['Section'])) {
+      errors.push('Section must be 1 or 2 uppercase letters.');
+    }
+
+    // Period validation (if internship is obtained)
+    if (formData['Obtained Internship'] === 'Yes') {
+      const periodPattern = /^[0-9]+ (days|weeks|months|years)$/i;
+      if (!periodPattern.test(formData['Period'])) {
+        errors.push('Period format should be like "2 months".');
+      }
+
+      // Company name validation
+      if (!formData['Company Name'].trim()) {
+        errors.push('Company Name is required if you have obtained an internship.');
+      }
+
+      // Date validation
+      if (!formData['Start Date']) {
+        errors.push('Start Date is required.');
+      }
+      if (!formData['End Date']) {
+        errors.push('End Date is required.');
+      }
+      if (formData['Start Date'] && formData['End Date']) {
+        const startDate = new Date(formData['Start Date']);
+        const endDate = new Date(formData['End Date']);
+        if (startDate >= endDate) {
+          errors.push('End date must be after start date.');
+        }
+      }
+
+      // Stipend validation
+      if (formData['Stipend (Rs.)'] && parseFloat(formData['Stipend (Rs.)']) < 0) {
+        errors.push('Stipend cannot be negative.');
+      }
+    }
+
+    return errors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     setMessage(null);
+
+    const validationErrors = validateForm();
+    if (validationErrors.length > 0) {
+      setMessage({ 
+        type: 'error', 
+        text: validationErrors.join('\n')
+      });
+      setSubmitting(false);
+      return;
+    }
 
     try {
       console.log('Sending update request with data:', formData);
@@ -133,6 +207,20 @@ const EditInternship = () => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  // Animation variants
+  const fadeUpVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 1,
+        delay: 0.1 + i * 0.1,
+        ease: [0.25, 0.4, 0.25, 1],
+      },
+    }),
   };
 
   if (loading) {
@@ -177,196 +265,458 @@ const EditInternship = () => {
             <Grid container spacing={3}>
               {/* Personal Information */}
               <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', fontWeight: 600 }}>
-                  Personal Information
-                </Typography>
+                <motion.div
+                  custom={1}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', fontWeight: 600 }}>
+                    Personal Information
+                  </Typography>
+                </motion.div>
               </Grid>
               
               <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="Register No"
-                  label="Register Number"
-                  name="Register No"
-                  value={formData['Register No']}
-                  onChange={handleChange}
-                  disabled
-                />
+                <motion.div
+                  custom={2}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <TextField
+                    required
+                    fullWidth
+                    id="Register No"
+                    label="Register Number"
+                    name="Register No"
+                    value={formData['Register No']}
+                    onChange={handleChange}
+                    disabled
+                  />
+                </motion.div>
               </Grid>
               
               <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="Name"
-                  label="Full Name"
-                  name="Name"
-                  value={formData['Name']}
-                  onChange={handleChange}
-                />
+                <motion.div
+                  custom={3}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <TextField
+                    required
+                    fullWidth
+                    id="Name"
+                    label="Full Name"
+                    name="Name"
+                    value={formData['Name']}
+                    onChange={handleChange}
+                  />
+                </motion.div>
               </Grid>
               
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id="Mobile No"
-                  label="Mobile Number"
-                  name="Mobile No"
-                  value={formData['Mobile No']}
-                  onChange={handleChange}
-                />
+                <motion.div
+                  custom={4}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <TextField
+                    fullWidth
+                    id="Mobile No"
+                    label="Mobile Number"
+                    name="Mobile No"
+                    value={formData['Mobile No']}
+                    onChange={handleChange}
+                  />
+                </motion.div>
               </Grid>
               
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id="Section"
-                  label="Section"
-                  name="Section"
-                  value={formData['Section']}
-                  onChange={handleChange}
-                />
+                <motion.div
+                  custom={5}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <TextField
+                    fullWidth
+                    id="Section"
+                    label="Section"
+                    name="Section"
+                    value={formData['Section']}
+                    onChange={handleChange}
+                  />
+                </motion.div>
               </Grid>
 
               {/* Internship Information */}
               <Grid item xs={12} sx={{ mt: 2 }}>
-                <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', fontWeight: 600 }}>
-                  Internship Information
-                </Typography>
+                <motion.div
+                  custom={6}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', fontWeight: 600 }}>
+                    Internship Information
+                  </Typography>
+                </motion.div>
               </Grid>
               
               <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="internship-label">Obtained Internship</InputLabel>
-                  <Select
-                    labelId="internship-label"
-                    id="Obtained Internship"
-                    name="Obtained Internship"
-                    value={formData['Obtained Internship']}
-                    label="Obtained Internship"
+                <motion.div
+                  custom={7}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <FormControl fullWidth>
+                    <InputLabel id="internship-label">Obtained Internship</InputLabel>
+                    <Select
+                      labelId="internship-label"
+                      id="Obtained Internship"
+                      name="Obtained Internship"
+                      value={formData['Obtained Internship']}
+                      label="Obtained Internship"
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="Yes">Yes</MenuItem>
+                      <MenuItem value="No">No</MenuItem>
+                    </Select>
+                  </FormControl>
+                </motion.div>
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <motion.div
+                  custom={8}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <TextField
+                    fullWidth
+                    id="Period"
+                    label="Internship Period (in months)"
+                    name="Period"
+                    value={formData['Period']}
                     onChange={handleChange}
-                  >
-                    <MenuItem value="Yes">Yes</MenuItem>
-                    <MenuItem value="No">No</MenuItem>
-                  </Select>
-                </FormControl>
+                  />
+                </motion.div>
               </Grid>
               
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id="Period"
-                  label="Internship Period (in months)"
-                  name="Period"
-                  value={formData['Period']}
-                  onChange={handleChange}
-                />
+                <motion.div
+                  custom={9}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <TextField
+                    fullWidth
+                    id="Start Date"
+                    label="Start Date"
+                    name="Start Date"
+                    type="date"
+                    value={formData['Start Date']}
+                    onChange={handleChange}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </motion.div>
               </Grid>
               
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id="Start Date"
-                  label="Start Date"
-                  name="Start Date"
-                  type="date"
-                  value={formData['Start Date']}
-                  onChange={handleChange}
-                  InputLabelProps={{ shrink: true }}
-                />
+                <motion.div
+                  custom={10}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <TextField
+                    fullWidth
+                    id="End Date"
+                    label="End Date"
+                    name="End Date"
+                    type="date"
+                    value={formData['End Date']}
+                    onChange={handleChange}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </motion.div>
               </Grid>
               
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id="End Date"
-                  label="End Date"
-                  name="End Date"
-                  type="date"
-                  value={formData['End Date']}
-                  onChange={handleChange}
-                  InputLabelProps={{ shrink: true }}
-                />
+                <motion.div
+                  custom={11}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <TextField
+                    fullWidth
+                    id="Company Name"
+                    label="Company Name"
+                    name="Company Name"
+                    value={formData['Company Name']}
+                    onChange={handleChange}
+                  />
+                </motion.div>
               </Grid>
               
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id="Company Name"
-                  label="Company Name"
-                  name="Company Name"
-                  value={formData['Company Name']}
-                  onChange={handleChange}
-                />
+                <motion.div
+                  custom={12}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <TextField
+                    fullWidth
+                    id="Placement Source"
+                    label="Placement Source"
+                    name="Placement Source"
+                    value={formData['Placement Source']}
+                    onChange={handleChange}
+                  />
+                </motion.div>
               </Grid>
               
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id="Placement Source"
-                  label="Placement Source"
-                  name="Placement Source"
-                  value={formData['Placement Source']}
-                  onChange={handleChange}
-                />
+                <motion.div
+                  custom={13}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <TextField
+                    fullWidth
+                    id="Stipend (Rs.)"
+                    label="Stipend (Rs.)"
+                    name="Stipend (Rs.)"
+                    type="number"
+                    value={formData['Stipend (Rs.)']}
+                    onChange={handleChange}
+                  />
+                </motion.div>
               </Grid>
               
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id="Stipend (Rs.)"
-                  label="Stipend (Rs.)"
-                  name="Stipend (Rs.)"
-                  type="number"
-                  value={formData['Stipend (Rs.)']}
-                  onChange={handleChange}
-                />
+                <motion.div
+                  custom={14}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <TextField
+                    fullWidth
+                    id="Internship Type"
+                    label="Internship Type"
+                    name="Internship Type"
+                    value={formData['Internship Type']}
+                    onChange={handleChange}
+                  />
+                </motion.div>
               </Grid>
               
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id="Internship Type"
-                  label="Internship Type"
-                  name="Internship Type"
-                  value={formData['Internship Type']}
-                  onChange={handleChange}
-                />
-              </Grid>
-              
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  id="Location"
-                  label="Location"
-                  name="Location"
-                  value={formData['Location']}
-                  onChange={handleChange}
-                />
+                <motion.div
+                  custom={15}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <FormControl fullWidth>
+                    <InputLabel id="location-label">Location</InputLabel>
+                    <Select
+                      labelId="location-label"
+                      id="Location"
+                      name="Location"
+                      value={formData['Location']}
+                      label="Location"
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="India">India</MenuItem>
+                      <MenuItem value="Abroad">Abroad</MenuItem>
+                    </Select>
+                  </FormControl>
+                </motion.div>
               </Grid>
 
-              <Grid item xs={12} sx={{ mt: 3 }}>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  disabled={submitting}
-                  sx={{
-                    bgcolor: 'white',
-                    color: 'black',
-                    border: '1px solid #e0e0e0',
-                    '&:hover': {
-                      bgcolor: '#f5f5f5',
-                    },
-                    '&:disabled': {
-                      bgcolor: '#f5f5f5',
-                      color: '#9e9e9e',
-                    },
-                  }}
+              {/* Document Submission */}
+              <Grid item xs={12} sx={{ mt: 2 }}>
+                <motion.div
+                  custom={16}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
                 >
-                  {submitting ? <CircularProgress size={24} /> : 'Update Internship'}
-                </Button>
+                  <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', fontWeight: 600 }}>
+                    Document Submission
+                  </Typography>
+                </motion.div>
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <motion.div
+                  custom={17}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <FormControl fullWidth>
+                    <InputLabel id="offer-letter-label">Offer Letter</InputLabel>
+                    <Select
+                      labelId="offer-letter-label"
+                      id="Offer Letter"
+                      name="Offer Letter"
+                      value={formData['Offer Letter']}
+                      label="Offer Letter"
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="Yes">Yes</MenuItem>
+                      <MenuItem value="No">No</MenuItem>
+                    </Select>
+                  </FormControl>
+                </motion.div>
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <motion.div
+                  custom={18}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <FormControl fullWidth>
+                    <InputLabel id="completion-certificate-label">Completion Certificate</InputLabel>
+                    <Select
+                      labelId="completion-certificate-label"
+                      id="Completion Certificate"
+                      name="Completion Certificate"
+                      value={formData['Completion Certificate']}
+                      label="Completion Certificate"
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="Yes">Yes</MenuItem>
+                      <MenuItem value="No">No</MenuItem>
+                    </Select>
+                  </FormControl>
+                </motion.div>
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <motion.div
+                  custom={19}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <FormControl fullWidth>
+                    <InputLabel id="internship-report-label">Internship Report</InputLabel>
+                    <Select
+                      labelId="internship-report-label"
+                      id="Internship Report"
+                      name="Internship Report"
+                      value={formData['Internship Report']}
+                      label="Internship Report"
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="Yes">Yes</MenuItem>
+                      <MenuItem value="No">No</MenuItem>
+                    </Select>
+                  </FormControl>
+                </motion.div>
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <motion.div
+                  custom={20}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <FormControl fullWidth>
+                    <InputLabel id="student-feedback-label">Student Feedback</InputLabel>
+                    <Select
+                      labelId="student-feedback-label"
+                      id="Student Feedback"
+                      name="Student Feedback"
+                      value={formData['Student Feedback']}
+                      label="Student Feedback"
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="Yes">Yes</MenuItem>
+                      <MenuItem value="No">No</MenuItem>
+                    </Select>
+                  </FormControl>
+                </motion.div>
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <motion.div
+                  custom={21}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <FormControl fullWidth>
+                    <InputLabel id="employer-feedback-label">Employer Feedback</InputLabel>
+                    <Select
+                      labelId="employer-feedback-label"
+                      id="Employer Feedback"
+                      name="Employer Feedback"
+                      value={formData['Employer Feedback']}
+                      label="Employer Feedback"
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="Yes">Yes</MenuItem>
+                      <MenuItem value="No">No</MenuItem>
+                    </Select>
+                  </FormControl>
+                </motion.div>
+              </Grid>
+
+              {/* Submit Button */}
+              <Grid item xs={12}>
+                <motion.div
+                  custom={22}
+                  variants={fadeUpVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 3 }}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      disabled={submitting}
+                      sx={{
+                        bgcolor: 'black',
+                        color: 'white',
+                        '&:hover': {
+                          bgcolor: 'rgba(0, 0, 0, 0.8)',
+                        },
+                      }}
+                    >
+                      {submitting ? <CircularProgress size={24} /> : 'Update Internship'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      onClick={() => navigate('/student/internship')}
+                      sx={{
+                        bgcolor: 'black',
+                        color: 'white',
+                        margin: '5px',
+                        border: '1px solid #e0e0e0',
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </Box>
+                </motion.div>
               </Grid>
             </Grid>
           </Box>

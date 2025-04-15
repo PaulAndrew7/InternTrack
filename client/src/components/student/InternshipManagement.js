@@ -44,7 +44,6 @@ const InternshipManagement = () => {
       const response = await axios.get('http://localhost:5000/api/excel/data');
       console.log('Received data:', response.data);
       const allInternships = response.data.data;
-      // Filter internships for the specific student (hardcoded for now)
       const studentInternships = allInternships.filter(
         (internship) => internship['Register No'] === user.username
       );
@@ -268,9 +267,10 @@ const InternshipManagement = () => {
                           sx={{
                             borderColor: 'black',
                             color: 'black',
+                            bgcolor: '#f5f5f5',
                             '&:hover': {
-                              borderColor: 'black',
                               bgcolor: '#f5f5f5',
+                              boxShadow: '0 0 10px 1px rgba(245, 245, 245, 0.16)',
                             },
                           }}
                         >

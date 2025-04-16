@@ -3,18 +3,14 @@ const router = express.Router();
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
-const { google } = require("googleapis");
 const auth = require("../middleware/auth");
+const { getDriveClient } = require('../config/google-drive');
 
 // Set up multer for file uploads
 const upload = multer({ dest: path.join(__dirname, "../../uploads/") });
 
-// Google Drive setup
-const googleAuth = new google.auth.GoogleAuth({
-  keyFile: process.env.GOOGLE_DRIVE_KEYFILE,
-  scopes: ["https://www.googleapis.com/auth/drive"],
-});
-const drive = google.drive({ version: "v3", googleAuth });
+// Get Google Drive client
+const drive = getDriveClient();
 
 // @route   POST api/drive/upload-excel
 // @desc    Upload Excel file to Google Drive

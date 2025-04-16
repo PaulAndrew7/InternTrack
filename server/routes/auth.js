@@ -1,24 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { google } = require("googleapis");
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 const path = require("path");
+const { getDriveClient } = require('../config/google-drive');
 
-// Google Drive setup
-const keyFilePath = path.resolve(process.env.GOOGLE_DRIVE_KEYFILE);
-const credentials = JSON.parse(fs.readFileSync(keyFilePath, 'utf8'));
-
-// Explicitly use JWT for authentication
-const auth = new google.auth.JWT(
-  credentials.client_email,
-  null, // keyFile path is not needed when private_key is provided directly
-  credentials.private_key.replace(/\\n/g, '\n'), // Ensure newlines in private key are correct
-  ["https://www.googleapis.com/auth/drive"]
-);
-
-const drive = google.drive({ version: "v3", auth });
+// Get Google Drive client
+const drive = getDriveClient();
 
 // Create a user folder in Google Drive
 const createUserFolder = async (username) => {
@@ -28,9 +17,6 @@ const createUserFolder = async (username) => {
       mimeType: "application/vnd.google-apps.folder",
       parents: [process.env.GOOGLE_DRIVE_MAIN_FOLDER],
     };
-
-    // Authorize the client before making the API call
-    await auth.authorize();
 
     const folder = await drive.files.create({
       resource: folderMetadata,
@@ -45,7 +31,6 @@ const createUserFolder = async (username) => {
     return null;
   }
 };
-
 
 // @route   POST api/auth/register
 // @desc    Register a user

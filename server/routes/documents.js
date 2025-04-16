@@ -9,16 +9,13 @@ const auth = require('../middleware/auth');
 const User = require('../models/User');
 const xlsx = require('xlsx');
 const { spawn } = require('child_process');
+const { getDriveClient } = require('../config/google-drive');
 
 // Set up multer for file uploads
 const upload = multer({ dest: path.join(__dirname, '../../uploads/') });
 
-// Google Drive setup
-const googleAuth = new google.auth.GoogleAuth({
-  keyFile: path.join(__dirname, '../../intern-track.json'),
-  scopes: ['https://www.googleapis.com/auth/drive.file'],
-});
-const drive = google.drive({ version: 'v3', auth: googleAuth });
+// Get Google Drive client
+const drive = getDriveClient();
 
 // Document classification keywords
 const documentTypes = [
@@ -162,7 +159,6 @@ router.post('/upload', [upload.array('files')], async (req, res) => {
 });
 
 // Load Google Drive credentials
-const KEYFILE_PATH = path.join(__dirname, '../../intern-track.json');
 const USERS_FILE = path.join(__dirname, '../../users.json');
 
 // Helper function to get user's folder ID

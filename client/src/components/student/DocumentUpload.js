@@ -111,7 +111,7 @@ const DocumentUpload = () => {
           type: 'success', 
           text: `Document uploaded and ${verifyResponse.data.verified ? 'verified' : 'pending verification'}`
         });
-        fetchInternships(); // Refresh the list
+        fetchInternships(); 
       }
     } catch (error) {
       setMessage({ 
